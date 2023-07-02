@@ -34,8 +34,8 @@ async function main() {
         max: 100,
         value: 50,
         unitsList: {
-          selected1: 0,
-          selected2: 0,
+          selected1: 2,
+          selected2: 2,
         },
         options: options,
         input: {
