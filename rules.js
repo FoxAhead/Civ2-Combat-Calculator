@@ -5,7 +5,7 @@ async function readTextFile(fileName) {
 }
 
 function parseRulesTxt(text) {
-  const lines = text.split('\r\n');
+  const lines = text.split(/\r?\n/);
   const unitsList = [];
   let readingUnits = false;
   for (let line of lines) {
