@@ -15,10 +15,14 @@ let defender = {};
 let workers = [];
 let app, vm, myChart1, myChart2;
 
-
 async function main() {
   unitsList = await loadUnitsList('RULES.TXT');
+  initVue();
+  initCharts();
+  vm.callStartCalc();
+}
 
+function initVue() {
   const options = [];
   for (const unit of unitsList) {
     options.push({
@@ -74,6 +78,32 @@ async function main() {
     },
     methods: {
       onClickStart() {
+        startSim();
+      },
+      onClickStop() {
+        stopSim();
+      },
+      onClickArrow() {
+        this.input.leftToRight = !this.input.leftToRight;
+      },
+      moveUnitsValuesToForm() {
+        // console.log('moveUnitsValuesToForm');
+        const unit1 = unitsList[this.unitsList.selected1];
+        if (unit1 != undefined) {
+          this.input.unit1.att = unit1.att;
+          this.input.unit1.def = unit1.def;
+          this.input.unit1.hp = unit1.hp * 10;
+          this.input.unit1.fp = unit1.fp;
+        }
+        const unit2 = unitsList[this.unitsList.selected2];
+        if (unit2 != undefined) {
+          this.input.unit2.att = unit2.att;
+          this.input.unit2.def = unit2.def;
+          this.input.unit2.hp = unit2.hp * 10;
+          this.input.unit2.fp = unit2.fp;
+        }
+      },
+      callStartCalc() {
         let data1 = {
           input: {
             unit: this.input.unit1,
@@ -97,31 +127,9 @@ async function main() {
           }
         };
         if (this.input.leftToRight) {
-          startSim(data1, data2);
+          startCalc(data1, data2);
         } else {
-          startSim(data2, data1);
-        }
-      },
-      onClickStop() {
-        stopSim();
-      },
-      onClickArrow() {
-        this.input.leftToRight = !this.input.leftToRight;
-      },
-      moveUnitsValuesToForm() {
-        const unit1 = unitsList[this.unitsList.selected1];
-        if (unit1 != undefined) {
-          this.input.unit1.att = unit1.att;
-          this.input.unit1.def = unit1.def;
-          this.input.unit1.hp = unit1.hp * 10;
-          this.input.unit1.fp = unit1.fp;
-        }
-        const unit2 = unitsList[this.unitsList.selected2];
-        if (unit2 != undefined) {
-          this.input.unit2.att = unit2.att;
-          this.input.unit2.def = unit2.def;
-          this.input.unit2.hp = unit2.hp * 10;
-          this.input.unit2.fp = unit2.fp;
+          startCalc(data2, data1);
         }
       }
     },
@@ -141,24 +149,29 @@ async function main() {
     watch: {
       input: {
         handler(newValue, oldValue) {
-          this.onClickStart();
+          // console.log('input');
+          this.callStartCalc();
         },
         deep: true
       },
       unitsList: {
         handler(newValue, oldValue) {
+          // console.log('unitsList');
           this.moveUnitsValuesToForm();
         },
         deep: true
       }
     },
     mounted() {
+      // console.log('mounted');
       this.moveUnitsValuesToForm();
     }
   })
 
   vm = app.mount('#app')
+}
 
+function initCharts() {
   myChart1 = new Chart("myChart1", {
     type: "bar",
     data: {
@@ -202,7 +215,7 @@ async function main() {
         data: hps2
       },
       {
-        backgroundColor: "rgba(192,0,0,1.0)",
+        backgroundColor: "rgba(192,0,0,0.2)",
         data: hps2a
       }]
     }
@@ -226,42 +239,45 @@ async function main() {
       }
     }
   });
-
 }
 
-function startSim(_attacker, _defender) {
+function startCalc(_attacker, _defender) {
   attacker = _attacker;
   defender = _defender;
-  stopSim();
   initChartArrays();
-  attacker.output.unit.s = 0;
-  attacker.output.unit.p = 0;
   attacker.output.unit.pc = 0;
-  defender.output.unit.s = 0;
-  defender.output.unit.p = 0;
   defender.output.unit.pc = 0;
   vm.totHP1 = 0;
   vm.totHP2 = 0;
-  vm.output.s = 0;
   calculate(attacker, defender);
-  // vm.workersCount = 4;
-  // for (let i = 0; i < vm.workersCount; i++) {
-  //   workers.push({
-  //     w: new Worker("workerSimulateCombats.js"),
-  //     finished: false
-  //   });
-  //   // workers[i] = new Worker("testWorker.js");
-  //   workers[i].w.onmessage = receiveWorkerMessage;
+}
 
-  // }
-  // let unitAA = new Unit(attacker.input.unit.att, attacker.input.unit.def, attacker.input.unit.hp, attacker.input.unit.fp);
-  // let unitDD = new Unit(defender.input.unit.att, defender.input.unit.def, defender.input.unit.hp, defender.input.unit.fp);
-  // for (let i = 0; i < workers.length; i++) {
-  //   workers[i].w.postMessage({
-  //     unitA: unitAA,
-  //     unitD: unitDD
-  //   });
-  // }
+function startSim() {
+  stopSim();
+  initArray(attacker.output.hpsa, attacker.input.unit.hp + 1);
+  initArray(defender.output.hpsa, defender.input.unit.hp + 1);
+  attacker.output.unit.s = 0;
+  defender.output.unit.s = 0;
+  vm.output.s = 0;
+  attacker.output.unit.p = 0;
+  defender.output.unit.p = 0;
+  vm.workersCount = 4;
+  for (let i = 0; i < vm.workersCount; i++) {
+    workers.push({
+      w: new Worker("workerSimulateCombats.js"),
+      finished: false
+    });
+    workers[i].w.onmessage = receiveWorkerMessage;
+
+  }
+  let unitA = new Unit(attacker.input.unit.att, attacker.input.unit.def, attacker.input.unit.hp, attacker.input.unit.fp);
+  let unitD = new Unit(defender.input.unit.att, defender.input.unit.def, defender.input.unit.hp, defender.input.unit.fp);
+  for (let i = 0; i < workers.length; i++) {
+    workers[i].w.postMessage({
+      unitA: unitA,
+      unitD: unitD
+    });
+  }
 }
 
 function pa(a, d, m = 8) {
@@ -353,23 +369,23 @@ function receiveWorkerMessage(event) {
   } else {
     const resultA = event.data.unitA;
     const resultD = event.data.unitD;
-    let max = 0;
+    // let max = 0;
     for (let i = 0; i < resultA.hps.length; i++) {
       attacker.output.hpsa[i] += resultA.hps[i] / 400000;
-      max = Math.max(max, hps1[i]);
+      //max = Math.max(max, hps1[i]);
     }
     for (let i = 0; i < resultD.hps.length; i++) {
       defender.output.hpsa[i] += resultD.hps[i] / 400000;
-      max = Math.max(max, hps2[i]);
+      //max = Math.max(max, hps2[i]);
     }
     attacker.output.unit.s += resultA.wins;
     defender.output.unit.s += resultD.wins;
-    vm.s = attacker.output.unit.s + defender.output.unit.s;
-    attacker.output.unit.p = (attacker.output.unit.s / vm.s * 100).toFixed(2);
-    defender.output.unit.p = (defender.output.unit.s / vm.s * 100).toFixed(2);
+    vm.output.s = attacker.output.unit.s + defender.output.unit.s;
+    attacker.output.unit.p = (attacker.output.unit.s / vm.output.s * 100).toFixed(2);
+    defender.output.unit.p = (defender.output.unit.s / vm.output.s * 100).toFixed(2);
     //  vm.totHP1 += combatResult.hp1;
     //  vm.totHP2 += combatResult.hp2;
-    max = Math.floor(max * 1.05);
+    //max = Math.floor(max * 1.05);
     //myChart1.options.scales.yAxes[0].ticks.max = max;
     //myChart2.options.scales.yAxes[0].ticks.max = max;
     myChart1.update();
@@ -382,8 +398,6 @@ function initChartArrays() {
   initArray(defender.output.labels, defender.input.unit.hp + 1, 1);
   initArray(attacker.output.hps, attacker.input.unit.hp + 1);
   initArray(defender.output.hps, defender.input.unit.hp + 1);
-  initArray(attacker.output.hpsa, attacker.input.unit.hp + 1);
-  initArray(defender.output.hpsa, defender.input.unit.hp + 1);
 }
 
 function initArray(arr, len, d = 0) {
