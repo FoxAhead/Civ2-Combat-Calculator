@@ -176,14 +176,16 @@ function initCharts() {
     type: "bar",
     data: {
       labels: labels1,
-      datasets: [{
-        backgroundColor: "rgba(0,0,192,1.0)",
-        data: hps1
-      },
-      {
-        backgroundColor: "rgba(0,0,192,0.5)",
-        data: hps1a
-      }]
+      datasets: [
+        {
+          backgroundColor: "rgba(0,0,192,1.0)",
+          data: hps1
+        },
+        {
+          backgroundColor: "rgba(0,0,192,0.5)",
+          data: hps1a
+        }
+      ]
     }
     ,
     options: {
@@ -211,14 +213,16 @@ function initCharts() {
     type: "bar",
     data: {
       labels: labels2,
-      datasets: [{
-        backgroundColor: "rgba(192,0,0,1.0)",
-        data: hps2
-      },
-      {
-        backgroundColor: "rgba(192,0,0,0.5)",
-        data: hps2a
-      }]
+      datasets: [
+        {
+          backgroundColor: "rgba(192,0,0,1.0)",
+          data: hps2
+        },
+        {
+          backgroundColor: "rgba(192,0,0,0.5)",
+          data: hps2a
+        }
+      ]
     }
     ,
     options: {
@@ -321,6 +325,10 @@ function calculate(attacker, defender) {
     myChart1.options.scales.yAxes[0].ticks.max = max;
     myChart2.options.scales.yAxes[0].ticks.max = max;
   }
+  hps1.shift();
+  hps2.shift();
+  labels1.shift();
+  labels2.shift();
   myChart1.update();
   myChart2.update();
 }
@@ -372,11 +380,11 @@ function receiveWorkerMessage(event) {
     const resultD = event.data.unitD;
     // let max = 0;
     for (let i = 0; i < resultA.hps.length; i++) {
-      attacker.output.hpsa[i] += resultA.hps[i] / 400000;
+      attacker.output.hpsa[i - 1] += resultA.hps[i] / 400000;
       //max = Math.max(max, hps1[i]);
     }
     for (let i = 0; i < resultD.hps.length; i++) {
-      defender.output.hpsa[i] += resultD.hps[i] / 400000;
+      defender.output.hpsa[i - 1] += resultD.hps[i] / 400000;
       //max = Math.max(max, hps2[i]);
     }
     attacker.output.unit.s += resultA.wins;
