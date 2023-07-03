@@ -181,7 +181,7 @@ function initCharts() {
         data: hps1
       },
       {
-        backgroundColor: "rgba(0,0,192,0.2)",
+        backgroundColor: "rgba(0,0,192,0.5)",
         data: hps1a
       }]
     }
@@ -190,18 +190,19 @@ function initCharts() {
       animation: { duration: 100 },
       plugins: { legend: false },
       scales: {
-        xAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'HP left'
-          }
-        }],
+        // xAxes: [{
+        //   scaleLabel: {
+        //     display: true,
+        //     labelString: 'HP left',
+        //     fontSize: 8
+        //   }
+        // }],
         yAxes: [{
           position: 'right',
-          scaleLabel: {
-            display: true,
-            labelString: '%'
-          }
+          // scaleLabel: {
+          //   display: true,
+          //   labelString: '%'
+          // }
         }]
       }
     }
@@ -215,7 +216,7 @@ function initCharts() {
         data: hps2
       },
       {
-        backgroundColor: "rgba(192,0,0,0.2)",
+        backgroundColor: "rgba(192,0,0,0.5)",
         data: hps2a
       }]
     }
@@ -224,18 +225,18 @@ function initCharts() {
       animation: { duration: 100 },
       plugins: { legend: false },
       scales: {
-        xAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'HP left'
-          }
-        }],
-        yAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: '%'
-          }
-        }]
+        // xAxes: [{
+        //   scaleLabel: {
+        //     display: true,
+        //     labelString: 'HP left'
+        //   }
+        // }],
+        // yAxes: [{
+        //   scaleLabel: {
+        //     display: true,
+        //     labelString: '%'
+        //   }
+        // }]
       }
     }
   });

@@ -16,24 +16,24 @@
   <div id="app">
     <div class="container">
       <form @submit.prevent="" novalidate>
-        <div class="row justify-content-center align-items-center mb-2">
-          <div class="col-3">
-            <select class="form-select" aria-label="Select unit 1" v-model="unitsList.selected1">
+        <div class="row justify-content-center align-items-center mb-1 g-0">
+          <div class="col-lg-3 col-5">
+            <select class="form-select text-center" aria-label="Select unit 1" v-model="unitsList.selected1">
               <option v-for="option in options" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
           </div>
           <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" @click="onClickArrow">{{ getArrow }}</button></div>
-          <div class="col-3">
-            <select class="form-select" aria-label="Select unit 2" v-model="unitsList.selected2">
+          <div class="col-lg-3 col-5">
+            <select class="form-select text-center" aria-label="Select unit 2" v-model="unitsList.selected2">
               <option v-for="option in options" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
           </div>
         </div>
-        <div class="row justify-content-center align-items-center mb-2">
+        <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-3">
             <input type="number" min="0" class="form-control" id="inputUnit1Att" v-model="input.unit1.att">
           </div>
@@ -42,7 +42,7 @@
             <input type="number" min="0" class="form-control" id="inputUnit2Att" v-model="input.unit2.att">
           </div>
         </div>
-        <div class="row justify-content-center align-items-center mb-2">
+        <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-3">
             <input type="number" min="0" class="form-control" id="inputUnit1Def" v-model="input.unit1.def">
           </div>
@@ -51,16 +51,16 @@
             <input type="number" min="0" class="form-control" id="inputUnit2Def" v-model="input.unit2.def">
           </div>
         </div>
-        <div class="row justify-content-center align-items-center mb-2">
+        <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-3">
             <input type="number" min="0" step="10" class="form-control" id="inputUnit1HP" v-model="input.unit1.hp">
           </div>
-          <div class=" col-2 text-center">HP</div>
+          <div class=" col-2 text-center">Hit Points</div>
           <div class="col-3">
             <input type="number" min="0" step="10" class="form-control" id="inputUnit2HP" v-model="input.unit2.hp">
           </div>
         </div>
-        <div class="row justify-content-center align-items-center mb-2">
+        <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-3">
             <input type="number" min="1" class="form-control" id="inputUnit1FP" v-model="input.unit1.fp">
           </div>
@@ -70,36 +70,40 @@
           </div>
         </div>
         <div class="row justify-content-center mb-2">
-          <div class="col-5 text-center">{{ output.unit1.p0 }} %</div>
-          <div class="col-1 text-center">Win Round</div>
-          <div class="col-5 text-center">{{ output.unit2.p0 }} %</div>
+          <div class="col-3 text-center">{{ output.unit1.p0 }} %</div>
+          <div class="col-2 text-center p-0">Round</div>
+          <div class="col-3 text-center">{{ output.unit2.p0 }} %</div>
         </div>
         <div class="row justify-content-center mb-2">
-          <div class="col-5 text-center">{{ output.unit1.pc }} %</div>
-          <div class="col-1 text-center">Win Battle</div>
-          <div class="col-5 text-center">{{ output.unit2.pc }} %</div>
+          <div class="col-3 text-center">{{ output.unit1.pc }} %</div>
+          <div class="col-2 text-center p-0">Battle</div>
+          <div class="col-3 text-center">{{ output.unit2.pc }} %</div>
         </div>
-        <div class="row justify-content-center mb-2">
-          <div class="col-6 text-end"><button type="button" class="btn btn-success" @click="onClickStart">Simulate</button></div>
-          <!-- <div class="col-1"></div> -->
-          <div class="col-6 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
-        </div>
-        <div class="row justify-content-center mb-2">
-          <div class="col-6 text-center">{{ output.unit1.p }} %</div>
-          <div class="col-6 text-center">{{ output.unit2.p }} %</div>
-        </div>
-        <div class="progress-stacked mb-2" style="height: 30px">
-          <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="{ width: output.unit1.pc + '%' }" style="height: 30px">
+        <div class="progress-stacked mb-2">
+          <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="{ width: output.unit1.pc + '%' }">
             <div class="progress-bar bg-primary">{{ output.unit1.pc }} %</div>
           </div>
-          <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="{ width: output.unit2.pc + '%' }" style="height: 30px">
+          <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="{ width: output.unit2.pc + '%' }">
             <div class="progress-bar bg-danger">{{ output.unit2.pc }} %</div>
           </div>
         </div>
-        <div class="row justify-content-center">
-          <div class="col-5"><canvas id="myChart1"></canvas></div>
-          <div class="col-1 text-center">{{ output.s }}</div>
-          <div class="col-5"><canvas id="myChart2"></canvas></div>
+        <div class="text-center mb-2 small">%</div>
+        <!-- <div class="row justify-content-center mb-2">
+          <div class="col-6 text-center">{{ output.unit1.p }} %</div>
+          <div class="col-6 text-center">{{ output.unit2.p }} %</div>
+        </div> -->
+        <div class="row justify-content-center g-0">
+          <div class="col-md-5 col-6"><canvas id="myChart1"></canvas></div>
+          <div class="col-md-5 col-6"><canvas id="myChart2"></canvas></div>
+        </div>
+        <div class="row text-center">
+          <div class="col-6 small">HP left</div>
+          <div class="col-6 small">HP left</div>
+        </div>
+        <div class="row justify-content-center g-0">
+          <div class="col-3 text-end"><button type="button" class="btn btn-success" @click="onClickStart">Simulate</button></div>
+          <div class="col-lg-2 col-3 text-center p-0">{{ output.s }}</div>
+          <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
         </div>
         <!-- <div class="row justify-content-center">
           <div class="col-6 text-center">{{ totHP1 }}</div>
