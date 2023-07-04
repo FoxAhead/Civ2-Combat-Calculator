@@ -18,15 +18,15 @@
       <form @submit.prevent="" novalidate>
         <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-lg-3 col-5">
-            <select class="form-select text-center" aria-label="Select unit 1" v-model="unitsList.selected1">
+            <select class="form-select text-center border-primary" aria-label="Select unit 1" v-model="unitsList.selected1">
               <option v-for="option in options" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
           </div>
-          <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" @click="onClickArrow">{{ getArrow }}</button></div>
+          <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow">{{ getAttackArrow }}</button></div>
           <div class="col-lg-3 col-5">
-            <select class="form-select text-center" aria-label="Select unit 2" v-model="unitsList.selected2">
+            <select class="form-select text-center border-danger" aria-label="Select unit 2" v-model="unitsList.selected2">
               <option v-for="option in options" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
@@ -35,38 +35,53 @@
         </div>
         <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" class="form-control" id="inputUnit1Att" v-model="input.unit1.att">
+            <input type="number" min="0" class="form-control border-primary" id="inputUnit1Att" v-model="input.unit1.att">
           </div>
           <div class="col-2 text-center">Attack</div>
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" class="form-control" id="inputUnit2Att" v-model="input.unit2.att">
+            <input type="number" min="0" class="form-control border-danger" id="inputUnit2Att" v-model="input.unit2.att">
           </div>
         </div>
         <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" class="form-control" id="inputUnit1Def" v-model="input.unit1.def">
+            <input type="number" min="0" class="form-control border-primary" id="inputUnit1Def" v-model="input.unit1.def">
           </div>
           <div class="col-2 text-center">Defense</div>
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" class="form-control" id="inputUnit2Def" v-model="input.unit2.def">
+            <input type="number" min="0" class="form-control border-danger" id="inputUnit2Def" v-model="input.unit2.def">
           </div>
         </div>
         <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" step="10" class="form-control" id="inputUnit1HP" v-model="input.unit1.hp">
+            <input type="number" min="0" step="10" class="form-control border-primary" id="inputUnit1HP" v-model="input.unit1.hp">
           </div>
           <div class=" col-2 text-center">Hit Points</div>
           <div class="col-lg-2 col-3">
-            <input type="number" min="0" step="10" class="form-control" id="inputUnit2HP" v-model="input.unit2.hp">
+            <input type="number" min="0" step="10" class="form-control border-danger" id="inputUnit2HP" v-model="input.unit2.hp">
           </div>
         </div>
         <div class="row justify-content-center align-items-center mb-1 g-0">
           <div class="col-lg-2 col-3">
-            <input type="number" min="1" class="form-control" id="inputUnit1FP" v-model="input.unit1.fp">
+            <input type="number" min="1" class="form-control border-primary" id="inputUnit1FP" v-model="input.unit1.fp">
           </div>
           <div class="col-2 text-center">Fire Power</div>
           <div class="col-lg-2 col-3">
-            <input type="number" min="1" class="form-control" id="inputUnit2FP" v-model="input.unit2.fp">
+            <input type="number" min="1" class="form-control border-danger" id="inputUnit2FP" v-model="input.unit2.fp">
+          </div>
+        </div>
+        <div class="row justify-content-center text-center mb-1 g-0">
+          <div class="col-lg-2 col-3">
+            <input type="checkbox" class="btn-check" id="inputUnit1Veteran" v-model="input.unit1.v">
+            <label class="btn btn-outline-primary m-1 p-1" for="inputUnit1Veteran">Veteran</label>
+            <input type="checkbox" class="btn-check" id="inputUnit1Fortified" v-model="input.unit1.f">
+            <label class="btn btn-outline-primary m-1 p-1" for="inputUnit1Fortified">Fortified</label>
+          </div>
+          <div class="col-2 text-center"></div>
+          <div class="col-lg-2 col-3">
+            <input type="checkbox" class="btn-check" id="inputUnit2Veteran" v-model="input.unit2.v">
+            <label class="btn btn-outline-danger m-1 p-1" for="inputUnit2Veteran">Veteran</label>
+            <input type="checkbox" class="btn-check" id="inputUnit2Fortified" v-model="input.unit2.f">
+            <label class="btn btn-outline-danger m-1 p-1" for="inputUnit2Fortified">Fortified</label>
           </div>
         </div>
         <div class="row justify-content-center text-center">

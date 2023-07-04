@@ -13,3 +13,7 @@ html {
 /*.col-form-label {
     text-align: right;
 }*/
+
+.form-control {
+  text-align: center !important;
+}
