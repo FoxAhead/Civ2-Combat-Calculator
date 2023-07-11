@@ -149,7 +149,9 @@ function initVue() {
     },
     computed: {
       getAttackArrow() {
-        return (this.input.leftToRight) ? String.fromCharCode(8213, 9654) : String.fromCharCode(9664, 8213);
+        // return (this.input.leftToRight) ? String.fromCharCode(8213, 9654) : String.fromCharCode(9664, 8213);
+        // return (this.input.leftToRight) ? '<i class="bi bi-arrow-right"></i>' : '<i class="bi bi-arrow-left"></i>';
+        return (this.input.leftToRight) ? '-->' : '<--';
       },
       getAttackColor() {
         return (this.input.leftToRight) ? 'btn-outline-primary' : 'btn-outline-danger';
@@ -214,6 +216,9 @@ function initCharts() {
         // }],
         yAxes: [{
           position: 'right',
+          ticks: {
+            beginAtZero: true
+          }
           // scaleLabel: {
           //   display: true,
           //   labelString: '%'
@@ -248,21 +253,27 @@ function initCharts() {
         //     labelString: 'HP left'
         //   }
         // }],
-        // yAxes: [{
-        //   scaleLabel: {
-        //     display: true,
-        //     labelString: '%'
-        //   }
-        // }]
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+          //   scaleLabel: {
+          //     display: true,
+          //     labelString: '%'
+          //   }
+        }]
       }
     }
   });
 }
 
 function startCalc(_attacker, _defender) {
+  stopSim();
   attacker = _attacker;
   defender = _defender;
-  initChartArrays();
+  initCalcArrays();
+  removeSimArraysFromChart();
+  // initSimArrays();
   attacker.output.unit.pc = 0;
   defender.output.unit.pc = 0;
   vm.totHP1 = 0;
@@ -272,8 +283,8 @@ function startCalc(_attacker, _defender) {
 
 function startSim() {
   stopSim();
-  initArray(attacker.output.hpsa, attacker.input.unit.hp + 1);
-  initArray(defender.output.hpsa, defender.input.unit.hp + 1);
+  addSimArraysToCharts();
+  initSimArrays();
   attacker.output.unit.s = 0;
   defender.output.unit.s = 0;
   vm.output.s = 0;
@@ -333,14 +344,14 @@ function calculate(attacker, defender) {
     for (let k = 0, hp = attacker.input.unit.hp; hp > 0; k++, hp -= defender.input.unit.fp) {
       let pi = nbd(p, k, toWinA);
       attacker.output.unit.pc += pi;
-      attacker.output.hps[hp] = (pi * 100).toFixed(2);
-      max = Math.max(max, attacker.output.hps[hp]);
+      attacker.output.hps[hp - 1] = (pi * 100).toFixed(2);
+      max = Math.max(max, attacker.output.hps[hp - 1]);
     }
     for (let k = 0, hp = defender.input.unit.hp; hp > 0; k++, hp -= attacker.input.unit.fp) {
       let pi = nbd(1 - p, k, toWinD);
       defender.output.unit.pc += pi;
-      defender.output.hps[hp] = (pi * 100).toFixed(2);
-      max = Math.max(max, defender.output.hps[hp]);
+      defender.output.hps[hp - 1] = (pi * 100).toFixed(2);
+      max = Math.max(max, defender.output.hps[hp - 1]);
     }
     attacker.output.unit.pc = (attacker.output.unit.pc * 100).toFixed(2);
     defender.output.unit.pc = (defender.output.unit.pc * 100).toFixed(2);
@@ -350,10 +361,6 @@ function calculate(attacker, defender) {
     myChart1.options.scales.yAxes[0].ticks.max = max;
     myChart2.options.scales.yAxes[0].ticks.max = max;
   }
-  hps1.shift();
-  hps2.shift();
-  labels1.shift();
-  labels2.shift();
   myChart1.update();
   myChart2.update();
 }
@@ -427,18 +434,45 @@ function receiveWorkerMessage(event) {
   }
 }
 
-function initChartArrays() {
-  initArray(attacker.output.labels, attacker.input.unit.hp + 1, 1);
-  initArray(defender.output.labels, defender.input.unit.hp + 1, 1);
-  initArray(attacker.output.hps, attacker.input.unit.hp + 1);
-  initArray(defender.output.hps, defender.input.unit.hp + 1);
+function initCalcArrays() {
+  initArray(attacker.output.labels, attacker.input.unit.hp, 1, 1);
+  initArray(defender.output.labels, defender.input.unit.hp, 1, 1);
+  initArray(attacker.output.hps, attacker.input.unit.hp);
+  initArray(defender.output.hps, defender.input.unit.hp);
 }
 
-function initArray(arr, len, d = 0) {
+function initSimArrays() {
+  initArray(attacker.output.hpsa, attacker.input.unit.hp);
+  initArray(defender.output.hpsa, defender.input.unit.hp);
+}
+
+function addSimArraysToCharts() {
+  myChart1.data.datasets[1] = {
+    backgroundColor: "rgba(0,0,192,0.5)",
+    data: hps1a
+  }
+  myChart2.data.datasets[1] = {
+    backgroundColor: "rgba(192,0,0,0.5)",
+    data: hps2a
+  }
+  myChart1.update();
+  myChart2.update();
+}
+
+function removeSimArraysFromChart() {
+  // delete myChart1.data.datasets[1];
+  myChart1.data.datasets.length = 1;
+  // delete myChart2.data.datasets[1];
+  myChart2.data.datasets.length = 1;
+  myChart1.update();
+  myChart2.update();
+}
+
+function initArray(arr, len, first = 0, delta = 0) {
   arr.length = len;
   arr.fill(0);
-  if (d > 0) {
-    for (let i = 0, j = 0; i < arr.length; i++, j += d) {
+  if (delta > 0) {
+    for (let i = 0, j = first; i < arr.length; i++, j += delta) {
       arr[i] = j;
     }
   }
