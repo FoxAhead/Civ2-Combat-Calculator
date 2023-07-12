@@ -1,16 +1,8 @@
 import Unit from "./Unit.js";
-import { loadUnitsList } from './rules.js';
 import { UnitTypes } from "./UnitTypes.js";
-
-function UnitType(x = 1, y = 2, z = 3) {
-  this.x = x;
-  this.y = y;
-  this.z = z;
-}
 
 window.onload = main;
 
-let unitsList = [];
 const labels1 = [];
 const labels2 = [];
 const hps1 = [];
@@ -21,12 +13,29 @@ let attacker = {};
 let defender = {};
 let workers = [];
 let app, vm, myChart1, myChart2;
+const CHART_COLOR = [
+  [
+    'rgba(0,0,192,1.0)',
+    'rgba(0,0,192,0.5)',
+  ],
+  [
+    'rgba(192,0,0,1.0)',
+    'rgba(192,0,0,0.5)',
+  ]
+];
 
-
+function InputUnit({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran, fortified } = {}) {
+  this.type = type;
+  this.att = att;
+  this.def = def;
+  this.hit = hit;
+  this.firepwr = firepwr;
+  this.veteran = veteran;
+  this.fortified = fortified;
+}
 
 async function main() {
   await UnitTypes.loadFromRulesTxt('RULES.TXT');
-  unitsList = await loadUnitsList('RULES.TXT');
   initVue();
   initCharts();
   vm.callStartCalc();
@@ -45,16 +54,21 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        max: 100,
-        value: 50,
+        // max: 100,
+        // value: 50,
         unitsList: {
           selected1: 2,
           selected2: 2,
         },
         options: options,
         input: {
+          unit: [
+            new InputUnit(),
+            new InputUnit()
+          ],
           leftToRight: true,
           unit1: {
+            type: 2,
             att: 1,
             def: 1,
             hp: 10,
@@ -63,6 +77,7 @@ function initVue() {
             f: false,
           },
           unit2: {
+            type: 2,
             att: 1,
             def: 1,
             hp: 10,
@@ -73,12 +88,14 @@ function initVue() {
         },
         output: {
           unit1: {
+            effAtt: 0,
             s: 0,
             p0: 0.0,
             p: 0.0,
             pc: 0.0
           },
           unit2: {
+            effAtt: 0,
             s: 0,
             p0: 0.0,
             p: 0.0,
@@ -102,19 +119,19 @@ function initVue() {
       },
       moveUnitsValuesToForm() {
         // console.log('moveUnitsValuesToForm');
-        const unit1 = unitsList[this.unitsList.selected1];
+        const unit1 = UnitTypes.list[this.unitsList.selected1];
         if (unit1 != undefined) {
-          this.input.unit1.att = unit1.att;
-          this.input.unit1.def = unit1.def;
-          this.input.unit1.hp = unit1.hp * 10;
-          this.input.unit1.fp = unit1.fp;
+          this.input.unit[0].att = unit1.att;
+          this.input.unit[0].def = unit1.def;
+          this.input.unit[0].hp = unit1.hit * 10;
+          this.input.unit[0].fp = unit1.firepwr;
         }
-        const unit2 = unitsList[this.unitsList.selected2];
+        const unit2 = UnitTypes.list[this.unitsList.selected2];
         if (unit2 != undefined) {
-          this.input.unit2.att = unit2.att;
-          this.input.unit2.def = unit2.def;
-          this.input.unit2.hp = unit2.hp * 10;
-          this.input.unit2.fp = unit2.fp;
+          this.input.unit[1].att = unit2.att;
+          this.input.unit[1].def = unit2.def;
+          this.input.unit[1].hp = unit2.hit * 10;
+          this.input.unit[1].fp = unit2.firepwr;
         }
       },
       callStartCalc() {
@@ -193,11 +210,11 @@ function initCharts() {
       labels: labels1,
       datasets: [
         {
-          backgroundColor: "rgba(0,0,192,1.0)",
+          backgroundColor: CHART_COLOR[0][0],
           data: hps1
         },
         {
-          backgroundColor: "rgba(0,0,192,0.5)",
+          backgroundColor: CHART_COLOR[0][1],
           data: hps1a
         }
       ]
@@ -233,11 +250,11 @@ function initCharts() {
       labels: labels2,
       datasets: [
         {
-          backgroundColor: "rgba(192,0,0,1.0)",
+          backgroundColor: CHART_COLOR[1][0],
           data: hps2
         },
         {
-          backgroundColor: "rgba(192,0,0,0.5)",
+          backgroundColor: CHART_COLOR[1][1],
           data: hps2a
         }
       ]
@@ -272,8 +289,9 @@ function startCalc(_attacker, _defender) {
   attacker = _attacker;
   defender = _defender;
   initCalcArrays();
+  initSimArrays();
+  vm.output.s = 0;
   removeSimArraysFromChart();
-  // initSimArrays();
   attacker.output.unit.pc = 0;
   defender.output.unit.pc = 0;
   vm.totHP1 = 0;
@@ -285,9 +303,9 @@ function startSim() {
   stopSim();
   addSimArraysToCharts();
   initSimArrays();
+  vm.output.s = 0;
   attacker.output.unit.s = 0;
   defender.output.unit.s = 0;
-  vm.output.s = 0;
   attacker.output.unit.p = 0;
   defender.output.unit.p = 0;
   vm.workersCount = 4;
@@ -364,6 +382,7 @@ function calculate(attacker, defender) {
   myChart1.update();
   myChart2.update();
 }
+
 /**
  * Negative binomial distribution 
  * @param {float} p - probability of success
@@ -448,11 +467,11 @@ function initSimArrays() {
 
 function addSimArraysToCharts() {
   myChart1.data.datasets[1] = {
-    backgroundColor: "rgba(0,0,192,0.5)",
+    backgroundColor: CHART_COLOR[0][1],
     data: hps1a
   }
   myChart2.data.datasets[1] = {
-    backgroundColor: "rgba(192,0,0,0.5)",
+    backgroundColor: CHART_COLOR[1][1],
     data: hps2a
   }
   myChart1.update();
@@ -460,9 +479,7 @@ function addSimArraysToCharts() {
 }
 
 function removeSimArraysFromChart() {
-  // delete myChart1.data.datasets[1];
   myChart1.data.datasets.length = 1;
-  // delete myChart2.data.datasets[1];
   myChart2.data.datasets.length = 1;
   myChart1.update();
   myChart2.update();

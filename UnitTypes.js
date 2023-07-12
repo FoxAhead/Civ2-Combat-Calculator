@@ -1,21 +1,4 @@
-class UnitType {
-  constructor({ name, until, domain, move, rng, att, def, hit, firepwr, cost, hold, role, preq, flags } = {}) {
-    this.name = name;
-    this.until = until;
-    this.domain = domain;
-    this.move = move;
-    this.rng = rng;
-    this.att = att;
-    this.def = def;
-    this.hit = hit;
-    this.firepwr = firepwr;
-    this.cost = cost;
-    this.hold = hold;
-    this.role = role;
-    this.preq = preq;
-    this.flags = flags;
-  }
-}
+import { UnitType } from "./UnitType.js";
 
 export class UnitTypes {
   static list = [];
@@ -41,7 +24,7 @@ function parseRulesTxt(text) {
         readingUnits = false;
       } else {
         let tokens = line.split(',').map(item => item.trim());
-        if (tokens[12].trim() != 'no') {
+        if (tokens[12] != 'no') {
           unitsList.push(
             new UnitType({
               name: tokens[0],
