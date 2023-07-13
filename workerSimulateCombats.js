@@ -1,3 +1,5 @@
+import { Civ2 } from "./Civ2.js";
+
 onmessage = function (event) {
   for (let j = 0; j < 100; j++) {
     let combatsResult = {
@@ -11,8 +13,8 @@ onmessage = function (event) {
         wins: 0
       },
     };
-    combatsResult.unitA.hps.length = event.data.unitA.hp + 1;
-    combatsResult.unitD.hps.length = event.data.unitD.hp + 1;
+    combatsResult.unitA.hps.length = event.data.unitA.hit + 1;
+    combatsResult.unitD.hps.length = event.data.unitD.hit + 1;
     combatsResult.unitA.hps.fill(0);
     combatsResult.unitD.hps.fill(0);
     for (let i = 0; i < 100000; i++) {
@@ -32,10 +34,10 @@ onmessage = function (event) {
 
 function simulateCombat(unitA, unitD) {
   //console.log("Test");
-  let hpA = unitA.hp;
-  let hpD = unitD.hp;
-  let att = unitA.att * 8;
-  let def = unitD.def * 8;
+  let hpA = unitA.hit;
+  let hpD = unitD.hit;
+  let att = Civ2.getEffectiveAttack(unitA, unitD);
+  let def = Civ2.getEffectiveDefense(unitA, unitD);
   if (unitA.v) {
     att += Math.floor(att / 2);
   }
@@ -46,9 +48,9 @@ function simulateCombat(unitA, unitD) {
     let dice1 = Math.floor(Math.random() * att);
     let dice2 = Math.floor(Math.random() * def);
     if (dice1 > dice2) {
-      hpD = hpD - unitA.fp;
+      hpD = hpD - unitA.firepwr;
     } else {
-      hpA = hpA - unitD.fp;
+      hpA = hpA - unitD.firepwr;
     }
     if (hpA < 0) hpA = 0;
     if (hpD < 0) hpD = 0;

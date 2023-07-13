@@ -1,5 +1,6 @@
 import Unit from "./Unit.js";
 import { UnitTypes } from "./UnitTypes.js";
+import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
 
@@ -24,7 +25,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function InputUnit({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran, fortified } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran = false, fortified = false } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -32,6 +33,14 @@ function InputUnit({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran,
   this.firepwr = firepwr;
   this.veteran = veteran;
   this.fortified = fortified;
+}
+
+function UnitOutput({ effAtt, s, p0, p, pc } = {}) {
+  this.effAtt = effAtt;
+  this.s = s;
+  this.p0 = p0;
+  this.p = p;
+  this.pc = pc;
 }
 
 async function main() {
@@ -54,57 +63,21 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        // max: 100,
-        // value: 50,
-        unitsList: {
-          selected1: 2,
-          selected2: 2,
-        },
         options: options,
         input: {
           unit: [
-            new InputUnit(),
-            new InputUnit()
+            new UnitInput(),
+            new UnitInput()
           ],
-          leftToRight: true,
-          unit1: {
-            type: 2,
-            att: 1,
-            def: 1,
-            hp: 10,
-            fp: 1,
-            v: false,
-            f: false,
-          },
-          unit2: {
-            type: 2,
-            att: 1,
-            def: 1,
-            hp: 10,
-            fp: 1,
-            v: false,
-            f: false,
-          },
+          attackingUnit: 0,
         },
         output: {
-          unit1: {
-            effAtt: 0,
-            s: 0,
-            p0: 0.0,
-            p: 0.0,
-            pc: 0.0
-          },
-          unit2: {
-            effAtt: 0,
-            s: 0,
-            p0: 0.0,
-            p: 0.0,
-            pc: 0.0
-          },
+          unit: [
+            new UnitOutput(),
+            new UnitOutput()
+          ],
           s: 0,
-        },
-        totHP1: 0,
-        totHP2: 0
+        }
       }
     },
     methods: {
@@ -115,32 +88,25 @@ function initVue() {
         stopSim();
       },
       onClickArrow() {
-        this.input.leftToRight = !this.input.leftToRight;
+        this.input.attackingUnit = 1 - this.input.attackingUnit;
       },
-      moveUnitsValuesToForm() {
+      moveUnitsValuesToForm(unitIndex) {
         // console.log('moveUnitsValuesToForm');
-        const unit1 = UnitTypes.list[this.unitsList.selected1];
-        if (unit1 != undefined) {
-          this.input.unit[0].att = unit1.att;
-          this.input.unit[0].def = unit1.def;
-          this.input.unit[0].hp = unit1.hit * 10;
-          this.input.unit[0].fp = unit1.firepwr;
-        }
-        const unit2 = UnitTypes.list[this.unitsList.selected2];
-        if (unit2 != undefined) {
-          this.input.unit[1].att = unit2.att;
-          this.input.unit[1].def = unit2.def;
-          this.input.unit[1].hp = unit2.hit * 10;
-          this.input.unit[1].fp = unit2.firepwr;
+        const unit = UnitTypes.list[this.input.unit[unitIndex].type];
+        if (unit != undefined) {
+          this.input.unit[unitIndex].att = unit.att;
+          this.input.unit[unitIndex].def = unit.def;
+          this.input.unit[unitIndex].hit = unit.hit * 10;
+          this.input.unit[unitIndex].firepwr = unit.firepwr;
         }
       },
       callStartCalc() {
         let data1 = {
           input: {
-            unit: this.input.unit1,
+            unit: this.input.unit[0],
           },
           output: {
-            unit: this.output.unit1,
+            unit: this.output.unit[0],
             labels: labels1,
             hps: hps1,
             hpsa: hps1a,
@@ -148,16 +114,16 @@ function initVue() {
         };
         let data2 = {
           input: {
-            unit: this.input.unit2,
+            unit: this.input.unit[1],
           },
           output: {
-            unit: this.output.unit2,
+            unit: this.output.unit[1],
             labels: labels2,
             hps: hps2,
             hpsa: hps2a,
           }
         };
-        if (this.input.leftToRight) {
+        if (this.input.attackingUnit == 0) {
           startCalc(data1, data2);
         } else {
           startCalc(data2, data1);
@@ -168,10 +134,10 @@ function initVue() {
       getAttackArrow() {
         // return (this.input.leftToRight) ? String.fromCharCode(8213, 9654) : String.fromCharCode(9664, 8213);
         // return (this.input.leftToRight) ? '<i class="bi bi-arrow-right"></i>' : '<i class="bi bi-arrow-left"></i>';
-        return (this.input.leftToRight) ? '-->' : '<--';
+        return (this.input.attackingUnit == 0) ? '-->' : '<--';
       },
       getAttackColor() {
-        return (this.input.leftToRight) ? 'btn-outline-primary' : 'btn-outline-danger';
+        return (this.input.attackingUnit == 0) ? 'btn-outline-primary' : 'btn-outline-danger';
       },
       showStop() {
         // console.log("showStop");
@@ -186,17 +152,18 @@ function initVue() {
         },
         deep: true
       },
-      unitsList: {
-        handler(newValue, oldValue) {
-          // console.log('unitsList');
-          this.moveUnitsValuesToForm();
-        },
-        deep: true
-      }
+      // unitsList: {
+      //   handler(newValue, oldValue) {
+      //     // console.log('unitsList');
+      //     this.moveUnitsValuesToForm();
+      //   },
+      //   deep: true
+      // }
     },
     mounted() {
       // console.log('mounted');
-      this.moveUnitsValuesToForm();
+      this.moveUnitsValuesToForm(0);
+      this.moveUnitsValuesToForm(1);
     }
   })
 
@@ -294,6 +261,10 @@ function startCalc(_attacker, _defender) {
   removeSimArraysFromChart();
   attacker.output.unit.pc = 0;
   defender.output.unit.pc = 0;
+  attacker.output.unit.effAtt = '';
+  attacker.output.unit.effDef = '';
+  defender.output.unit.effAtt = '';
+  defender.output.unit.effDef = '';
   vm.totHP1 = 0;
   vm.totHP2 = 0;
   calculate(attacker, defender);
@@ -311,14 +282,16 @@ function startSim() {
   vm.workersCount = 4;
   for (let i = 0; i < vm.workersCount; i++) {
     workers.push({
-      w: new Worker("workerSimulateCombats.js"),
+      w: new Worker("workerSimulateCombats.js", { type: "module" }),
       finished: false
     });
     workers[i].w.onmessage = receiveWorkerMessage;
 
   }
-  let unitA = new Unit(attacker.input.unit.att, attacker.input.unit.def, attacker.input.unit.hp, attacker.input.unit.fp, attacker.input.unit.v);
-  let unitD = new Unit(defender.input.unit.att, defender.input.unit.def, defender.input.unit.hp, defender.input.unit.fp, defender.input.unit.v);
+  // let unitA = new Unit(attacker.input.unit.att, attacker.input.unit.def, attacker.input.unit.hit, attacker.input.unit.firepwr, attacker.input.unit.v);
+  // let unitD = new Unit(defender.input.unit.att, defender.input.unit.def, defender.input.unit.hit, defender.input.unit.firepwr, defender.input.unit.v);
+  let unitA = JSON.parse(JSON.stringify(attacker.input.unit));
+  let unitD = JSON.parse(JSON.stringify(defender.input.unit));
   for (let i = 0; i < workers.length; i++) {
     workers[i].w.postMessage({
       unitA: unitA,
@@ -341,31 +314,23 @@ function pa(a, d) {
 
 function calculate(attacker, defender) {
   if (attacker.input.unit.att > 0) {
-    let m = 8;
-    let att = attacker.input.unit.att * m;
-    let def = defender.input.unit.def * m;
-    if (attacker.input.unit.v) {
-      att += Math.floor(att / 2);
-    }
-    if (defender.input.unit.v) {
-      def += Math.floor(def / 2);
-    }
-    if (defender.input.unit.f) {
-      def += Math.floor(def / 2);
-    }
-    let p = pa(att, def);
+    let effAtt = Civ2.getEffectiveAttack(attacker.input.unit, defender.input.unit);
+    let effDef = Civ2.getEffectiveDefense(attacker.input.unit, defender.input.unit);
+    attacker.output.unit.effAtt = effAtt;
+    defender.output.unit.effDef = effDef;
+    let p = pa(effAtt, effDef);
     let max = 0;
-    let toWinA = Math.ceil(defender.input.unit.hp / attacker.input.unit.fp);
-    let toWinD = Math.ceil(attacker.input.unit.hp / defender.input.unit.fp);
+    let toWinA = Math.ceil(defender.input.unit.hit / attacker.input.unit.firepwr);
+    let toWinD = Math.ceil(attacker.input.unit.hit / defender.input.unit.firepwr);
     attacker.output.unit.pc = 0;
     defender.output.unit.pc = 0;
-    for (let k = 0, hp = attacker.input.unit.hp; hp > 0; k++, hp -= defender.input.unit.fp) {
+    for (let k = 0, hp = attacker.input.unit.hit; hp > 0; k++, hp -= defender.input.unit.firepwr) {
       let pi = nbd(p, k, toWinA);
       attacker.output.unit.pc += pi;
       attacker.output.hps[hp - 1] = (pi * 100).toFixed(2);
       max = Math.max(max, attacker.output.hps[hp - 1]);
     }
-    for (let k = 0, hp = defender.input.unit.hp; hp > 0; k++, hp -= attacker.input.unit.fp) {
+    for (let k = 0, hp = defender.input.unit.hit; hp > 0; k++, hp -= attacker.input.unit.firepwr) {
       let pi = nbd(1 - p, k, toWinD);
       defender.output.unit.pc += pi;
       defender.output.hps[hp - 1] = (pi * 100).toFixed(2);
@@ -454,15 +419,15 @@ function receiveWorkerMessage(event) {
 }
 
 function initCalcArrays() {
-  initArray(attacker.output.labels, attacker.input.unit.hp, 1, 1);
-  initArray(defender.output.labels, defender.input.unit.hp, 1, 1);
-  initArray(attacker.output.hps, attacker.input.unit.hp);
-  initArray(defender.output.hps, defender.input.unit.hp);
+  initArray(attacker.output.labels, attacker.input.unit.hit, 1, 1);
+  initArray(defender.output.labels, defender.input.unit.hit, 1, 1);
+  initArray(attacker.output.hps, attacker.input.unit.hit);
+  initArray(defender.output.hps, defender.input.unit.hit);
 }
 
 function initSimArrays() {
-  initArray(attacker.output.hpsa, attacker.input.unit.hp);
-  initArray(defender.output.hpsa, defender.input.unit.hp);
+  initArray(attacker.output.hpsa, attacker.input.unit.hit);
+  initArray(defender.output.hpsa, defender.input.unit.hit);
 }
 
 function addSimArraysToCharts() {
