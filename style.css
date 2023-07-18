@@ -30,3 +30,33 @@ label.btn {
 .row>* {
   padding: 0 !important;
 }
+
+abbr[title1] {
+  position: relative;
+  /* ensure consistent styling across browsers */
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+abbr[title1]:hover::after,
+abbr[title1]:focus::after {
+  content: attr(title1);
+  white-space: pre;
+  text-align: right;
+  /* position tooltip like the native one */
+  position: absolute;
+  left: 0;
+  /* bottom: -50px; */
+  margin: 28px 0 0 0;
+  width: auto;
+  /* white-space: nowrap; */
+
+  /* style tooltip */
+  background-color: #1e1e1e;
+  color: #fff;
+  border-radius: 3px;
+  box-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  padding: 3px 5px;
+  z-index: 1000;
+}

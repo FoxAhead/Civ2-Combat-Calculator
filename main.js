@@ -1,4 +1,4 @@
-import { UnitTypes } from "./UnitTypes.js";
+import { RulesTxt } from "./RulesTxt.js";
 import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
@@ -24,12 +24,14 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran = false, fortified = false, paradrop = false, fortification = 'None' } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, fortification = 'None' } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
+  this.river = river;
+  this.terrain = terrain;
   this.veteran = veteran;
   this.fortified = fortified;
   this.paradrop = paradrop;
@@ -43,8 +45,16 @@ function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0 } = {}) {
   this.firepwr = firepwr;
 }
 
+function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [] } = {}) {
+  this.att = att;
+  this.def = def;
+  this.hit = hit;
+  this.firepwr = firepwr;
+}
+
 function UnitOutput({ s, p0, p, pc } = {}) {
   this.effective = new UnitEffective();
+  this.explain = new EffectiveExplain();
   this.s = s;
   this.p0 = p0;
   this.p = p;
@@ -52,27 +62,19 @@ function UnitOutput({ s, p0, p, pc } = {}) {
 }
 
 async function main() {
-  await UnitTypes.loadFromRulesTxt('RULES.TXT');
+  await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
   initCharts();
   vm.callStartCalc();
 }
 
 function initVue() {
-  const options = [];
-  for (const [index, unit] of UnitTypes.list.entries()) {
-    options.push({
-      // text: `${index}. ${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
-      text: `${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
-      value: options.length
-    });
-  }
-
   app = Vue.createApp({
     data() {
       return {
         workersCount: 0,
-        options: options,
+        unitTypes: RulesTxt.getUnitTypesOptions(),
+        terrainTypes: RulesTxt.getTerrainTypesOptions(),
         input: {
           unit: [
             new UnitInput(),
@@ -101,7 +103,7 @@ function initVue() {
       },
       moveUnitsValuesToForm(unitIndex) {
         // console.log('moveUnitsValuesToForm');
-        const unit = UnitTypes.list[this.input.unit[unitIndex].type];
+        const unit = RulesTxt.unitTypes[this.input.unit[unitIndex].type];
         if (unit != undefined) {
           this.input.unit[unitIndex].att = unit.att;
           this.input.unit[unitIndex].def = unit.def;
@@ -110,7 +112,7 @@ function initVue() {
         }
       },
       checkInput(unitIndex) {
-        if (!UnitTypes.canMakeParadrops(this.input.unit[unitIndex].type) && this.input.unit[unitIndex].paradrop) { //Can make paradrops
+        if (!RulesTxt.unitTypes[this.input.unit[unitIndex].type].canMakeParadrops && this.input.unit[unitIndex].paradrop) { //Can make paradrops
           this.$nextTick(() => {
             this.input.unit[unitIndex].paradrop = false;
           });
@@ -146,7 +148,7 @@ function initVue() {
         }
       },
       canMakeParadrops(unitIndex) {
-        return UnitTypes.canMakeParadrops(this.input.unit[unitIndex].type);
+        return (RulesTxt.unitTypes[this.input.unit[unitIndex].type]).canMakeParadrops();
       }
     },
     computed: {
@@ -275,7 +277,14 @@ function startCalc(_attacker, _defender) {
   removeSimArraysFromChart();
   undefineObjectProperties(attacker.output.unit);
   undefineObjectProperties(defender.output.unit);
-  Civ2.setEffectives(attacker.input.unit, defender.input.unit, attacker.output.unit.effective, defender.output.unit.effective);
+  Civ2.setEffectives(
+    attacker.input.unit,
+    defender.input.unit,
+    attacker.output.unit.effective,
+    defender.output.unit.effective,
+    attacker.output.unit.explain,
+    defender.output.unit.explain,
+  );
   calculate(attacker, defender);
 }
 
@@ -455,12 +464,16 @@ function initArray(arr, len, first = 0, delta = 0) {
 }
 
 function undefineObjectProperties(obj) {
-  for (const property in obj) {
-    if (obj.hasOwnProperty(property)) {
-      if (typeof (obj[property]) == 'object') {
-        undefineObjectProperties(obj[property])
-      } else {
-        obj[property] = undefined;
+  if (obj instanceof Array) {
+    obj.length = 0;
+  } else {
+    for (const property in obj) {
+      if (obj.hasOwnProperty(property)) {
+        if (typeof (obj[property]) == 'object') {
+          undefineObjectProperties(obj[property])
+        } else {
+          obj[property] = undefined;
+        }
       }
     }
   }

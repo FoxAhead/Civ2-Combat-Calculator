@@ -18,11 +18,12 @@
   <div id="app">
     <div class="container" v-cloak>
       <form @submit.prevent="" novalidate>
+        <!-- Unit Types -->
         <div class="row justify-content-center align-items-center text-center">
           <!-- <div class="col-1 text-secondary">{{ input.unit[0].type }}</div> -->
           <div class="col-lg-3 col-5">
             <select class="form-select text-center border-primary" aria-label="Select unit 1" v-model="input.unit[0].type" @change="moveUnitsValuesToForm(0)">
-              <option v-for="option in options" :key="option.value" :value="option.value">
+              <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
@@ -32,15 +33,16 @@
           <!-- <div class=" col-2 text-center"><button type="button" class="btn btn-outline-primary bi bi-arrow-right" :class="getAttackColor" @click="onClickArrow"></button></div> -->
           <div class="col-lg-3 col-5">
             <select class="form-select text-center border-danger" aria-label="Select unit 2" v-model="input.unit[1].type" @change="moveUnitsValuesToForm(1)">
-              <option v-for="option in options" :key="option.value" :value="option.value">
+              <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
           </div>
           <!-- <div class="col-1 text-secondary">{{ input.unit[1].type }}</div> -->
         </div>
+        <!-- Attack -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[0].effective.att }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.att.join('\r\n')" tabindex="0">{{ output.unit[0].effective.att }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-primary" id="inputUnit1Att" v-model="input.unit[0].att">
           </div>
@@ -48,10 +50,11 @@
           <div class=" col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-danger" id="inputUnit2Att" v-model="input.unit[1].att">
           </div>
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[1].effective.att }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.att.join('\r\n')" tabindex="0">{{ output.unit[1].effective.att }}</abbr></div>
         </div>
+        <!-- Defense -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[0].effective.def }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.def.join('\r\n')" tabindex="0">{{ output.unit[0].effective.def }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-primary" id="inputUnit1Def" v-model="input.unit[0].def">
           </div>
@@ -59,10 +62,11 @@
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-danger" id="inputUnit2Def" v-model="input.unit[1].def">
           </div>
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[1].effective.def }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.def.join('\r\n')" tabindex="0">{{ output.unit[1].effective.def }}</abbr></div>
         </div>
+        <!-- Hit Points -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[0].effective.hit }}</div>
+          <!-- <div class="col-lg-1 col-2 text-secondary">{{ output.unit[0].effective.hit }}</div> -->
           <div class="col-lg-2 col-3">
             <input type="number" min="0" step="10" class="form-control border-primary" id="inputUnit1HP" v-model="input.unit[0].hit">
           </div>
@@ -70,10 +74,11 @@
           <div class="col-lg-2 col-3">
             <input type="number" min="0" step="10" class="form-control border-danger" id="inputUnit2HP" v-model="input.unit[1].hit">
           </div>
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[1].effective.hit }}</div>
+          <!-- <div class="col-lg-1 col-2 text-secondary">{{ output.unit[1].effective.hit }}</div> -->
         </div>
+        <!-- Fire Power -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[0].effective.firepwr }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.firepwr.join('\r\n')" tabindex="0">{{ output.unit[0].effective.firepwr }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="1" class="form-control border-primary" id="inputUnit1FP" v-model="input.unit[0].firepwr">
           </div>
@@ -81,8 +86,35 @@
           <div class="col-lg-2 col-3">
             <input type="number" min="1" class="form-control border-danger" id="inputUnit2FP" v-model="input.unit[1].firepwr">
           </div>
-          <div class="col-lg-1 col-2 text-secondary">{{ output.unit[1].effective.firepwr }}</div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.firepwr.join('\r\n')" tabindex="0">{{ output.unit[1].effective.firepwr }}</abbr></div>
         </div>
+        <!-- Terrain -->
+        <div class="row justify-content-center align-items-center text-center">
+          <div class="col-lg-1 col-2">
+            <input type="checkbox" class="btn-check" id="inputUnit1River" v-model="input.unit[0].river">
+            <label class="btn btn-outline-primary" for="inputUnit1River">River</label>
+          </div>
+          <div class="col-lg-2 col-3">
+            <select class="form-select text-center border-primary" aria-label="Select terrain 1" v-model="input.unit[0].terrain" @change="moveUnitsValuesToForm(0)">
+              <option v-for="option in terrainTypes" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
+            </select>
+          </div>
+          <div class="col-2">Terrain</div>
+          <div class="col-lg-2 col-3">
+            <select class="form-select text-center border-danger" aria-label="Select terrain 2" v-model="input.unit[1].terrain" @change="moveUnitsValuesToForm(1)">
+              <option v-for="option in terrainTypes" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
+            </select>
+          </div>
+          <div class="col-lg-1 col-2">
+            <input type="checkbox" class="btn-check" id="inputUnit2River" v-model="input.unit[1].river">
+            <label class="btn btn-outline-danger" for="inputUnit2River">River</label>
+          </div>
+        </div>
+        <!-- Options -->
         <div class="row justify-content-center text-center">
           <div class="col-lg-4 col-6">
             <input type="checkbox" class="btn-check" id="inputUnit1Veteran" v-model="input.unit[0].veteran">
@@ -106,6 +138,8 @@
             <div class="btn-group" role="group">
               <input type="radio" class="btn-check" name="groupFortification1" id="inputUnit1None" v-model="input.unit[0].fortification" value="None" checked>
               <label class="btn btn-outline-primary" for="inputUnit1None">None</label>
+              <input type="radio" class="btn-check" name="groupFortification1" id="inputUnit1City" v-model="input.unit[0].fortification" value="City">
+              <label class="btn btn-outline-primary" for="inputUnit1City">City</label>
               <input type="radio" class="btn-check" name="groupFortification1" id="inputUnit1Fortress" v-model="input.unit[0].fortification" value="Fortress">
               <label class="btn btn-outline-primary" for="inputUnit1Fortress">Fortress</label>
               <input type="radio" class="btn-check" name="groupFortification1" id="inputUnit1Walls" v-model="input.unit[0].fortification" value="Walls">
@@ -116,6 +150,8 @@
             <div class="btn-group" role="group">
               <input type="radio" class="btn-check" name="groupFortification2" id="inputUnit2None" v-model="input.unit[1].fortification" value="None" checked>
               <label class="btn btn-outline-danger p-1" for="inputUnit2None">None</label>
+              <input type="radio" class="btn-check" name="groupFortification1" id="inputUnit2City" v-model="input.unit[1].fortification" value="City">
+              <label class="btn btn-outline-danger" for="inputUnit2City">City</label>
               <input type="radio" class="btn-check" name="groupFortification2" id="inputUnit2Fortress" v-model="input.unit[1].fortification" value="Fortress">
               <label class="btn btn-outline-danger p-1" for="inputUnit2Fortress">Fortress</label>
               <input type="radio" class="btn-check" name="groupFortification2" id="inputUnit2Walls" v-model="input.unit[1].fortification" value="Walls">
@@ -123,6 +159,7 @@
             </div>
           </div>
         </div>
+        <!-- Chances -->
         <div class=" row justify-content-center text-center">
           <div class="col-lg-6 col-8 text-center">
             <div class="position-relative mb-2">

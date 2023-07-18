@@ -18,7 +18,16 @@ export class UnitType {
   submarineAdvantagesDisadvantages() {
     return (this.flags & 0b000000000001000) != 0;
   }
+  canAttackAirUnitsFighter() {
+    return (this.flags & 0b000000000010000) != 0;
+  }
+  negatesCityWallsHowitzer() {
+    return (this.flags & 0b000000001000000) != 0;
+  }
   canMakeParadrops() {
     return (this.flags & 0b000000100000000) != 0;
+  }
+  destroyedAfterAttackingMissiles() {
+    return (this.flags & 0b001000000000000) != 0;
   }
 }
