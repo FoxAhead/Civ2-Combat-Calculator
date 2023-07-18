@@ -6,6 +6,14 @@ export class UnitTypes {
     const rulesTxt = await readTextFile(fileName);
     this.list = parseRulesTxt(rulesTxt);
   }
+
+  static submarineAdvantagesDisadvantages(type) {
+    return (this.list[type].flags & 0b000000000001000) != 0;
+  }
+
+  static canMakeParadrops(type) {
+    return (this.list[type].flags & 0b000000100000000) != 0;
+  }
 }
 
 async function readTextFile(fileName) {

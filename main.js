@@ -1,7 +1,5 @@
-import Unit from "./Unit.js";
 import { UnitTypes } from "./UnitTypes.js";
 import { Civ2 } from "./Civ2.js";
-
 
 window.onload = main;
 
@@ -26,7 +24,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran = false, fortified = false } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran = false, fortified = false, paradrop = false, fortification = 'None' } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -34,10 +32,19 @@ function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, veteran 
   this.firepwr = firepwr;
   this.veteran = veteran;
   this.fortified = fortified;
+  this.paradrop = paradrop;
+  this.fortification = fortification;
 }
 
-function UnitOutput({ effAtt, s, p0, p, pc } = {}) {
-  this.effAtt = effAtt;
+function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0 } = {}) {
+  this.att = att;
+  this.def = def;
+  this.hit = hit;
+  this.firepwr = firepwr;
+}
+
+function UnitOutput({ s, p0, p, pc } = {}) {
+  this.effective = new UnitEffective();
   this.s = s;
   this.p0 = p0;
   this.p = p;
@@ -53,8 +60,9 @@ async function main() {
 
 function initVue() {
   const options = [];
-  for (const unit of UnitTypes.list) {
+  for (const [index, unit] of UnitTypes.list.entries()) {
     options.push({
+      // text: `${index}. ${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
       text: `${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
       value: options.length
     });
@@ -101,6 +109,13 @@ function initVue() {
           this.input.unit[unitIndex].firepwr = unit.firepwr;
         }
       },
+      checkInput(unitIndex) {
+        if (!UnitTypes.canMakeParadrops(this.input.unit[unitIndex].type) && this.input.unit[unitIndex].paradrop) { //Can make paradrops
+          this.$nextTick(() => {
+            this.input.unit[unitIndex].paradrop = false;
+          });
+        }
+      },
       callStartCalc() {
         let data1 = {
           input: {
@@ -129,6 +144,9 @@ function initVue() {
         } else {
           startCalc(data2, data1);
         }
+      },
+      canMakeParadrops(unitIndex) {
+        return UnitTypes.canMakeParadrops(this.input.unit[unitIndex].type);
       }
     },
     computed: {
@@ -143,23 +161,18 @@ function initVue() {
       showStop() {
         // console.log("showStop");
         return (this.workersCount > 0);
-      }
+      },
     },
     watch: {
       input: {
         handler(newValue, oldValue) {
           // console.log('input');
+          this.checkInput(0);
+          this.checkInput(1);
           this.callStartCalc();
         },
         deep: true
       },
-      // unitsList: {
-      //   handler(newValue, oldValue) {
-      //     // console.log('unitsList');
-      //     this.moveUnitsValuesToForm();
-      //   },
-      //   deep: true
-      // }
     },
     mounted() {
       // console.log('mounted');
@@ -260,14 +273,9 @@ function startCalc(_attacker, _defender) {
   initSimArrays();
   vm.output.s = 0;
   removeSimArraysFromChart();
-  attacker.output.unit.pc = 0;
-  defender.output.unit.pc = 0;
-  attacker.output.unit.effAtt = '';
-  attacker.output.unit.effDef = '';
-  defender.output.unit.effAtt = '';
-  defender.output.unit.effDef = '';
-  vm.totHP1 = 0;
-  vm.totHP2 = 0;
+  undefineObjectProperties(attacker.output.unit);
+  undefineObjectProperties(defender.output.unit);
+  Civ2.setEffectives(attacker.input.unit, defender.input.unit, attacker.output.unit.effective, defender.output.unit.effective);
   calculate(attacker, defender);
 }
 
@@ -287,16 +295,11 @@ function startSim() {
       finished: false
     });
     workers[i].w.onmessage = receiveWorkerMessage;
-
   }
-  // let unitA = new Unit(attacker.input.unit.att, attacker.input.unit.def, attacker.input.unit.hit, attacker.input.unit.firepwr, attacker.input.unit.v);
-  // let unitD = new Unit(defender.input.unit.att, defender.input.unit.def, defender.input.unit.hit, defender.input.unit.firepwr, defender.input.unit.v);
-  let unitA = JSON.parse(JSON.stringify(attacker.input.unit));
-  let unitD = JSON.parse(JSON.stringify(defender.input.unit));
   for (let i = 0; i < workers.length; i++) {
     workers[i].w.postMessage({
-      unitA: unitA,
-      unitD: unitD
+      unitA: new UnitEffective(attacker.output.unit.effective),
+      unitD: new UnitEffective(defender.output.unit.effective)
     });
   }
 }
@@ -315,23 +318,21 @@ function pa(a, d) {
 
 function calculate(attacker, defender) {
   if (attacker.input.unit.att > 0) {
-    let effAtt = Civ2.getEffectiveAttack(attacker.input.unit, defender.input.unit);
-    let effDef = Civ2.getEffectiveDefense(attacker.input.unit, defender.input.unit);
-    attacker.output.unit.effAtt = effAtt;
-    defender.output.unit.effDef = effDef;
-    let p = pa(effAtt, effDef);
+    let effA = attacker.output.unit.effective;
+    let effD = defender.output.unit.effective;
+    let p = pa(effA.att, effD.def);
     let max = 0;
-    let toWinA = Math.ceil(defender.input.unit.hit / attacker.input.unit.firepwr);
-    let toWinD = Math.ceil(attacker.input.unit.hit / defender.input.unit.firepwr);
+    let toWinA = Math.ceil(effD.hit / effA.firepwr);
+    let toWinD = Math.ceil(effA.hit / effD.firepwr);
     attacker.output.unit.pc = 0;
     defender.output.unit.pc = 0;
-    for (let k = 0, hp = attacker.input.unit.hit; hp > 0; k++, hp -= defender.input.unit.firepwr) {
+    for (let k = 0, hp = effA.hit; hp > 0; k++, hp -= effD.firepwr) {
       let pi = nbd(p, k, toWinA);
       attacker.output.unit.pc += pi;
       attacker.output.hps[hp - 1] = (pi * 100).toFixed(2);
       max = Math.max(max, attacker.output.hps[hp - 1]);
     }
-    for (let k = 0, hp = defender.input.unit.hit; hp > 0; k++, hp -= attacker.input.unit.firepwr) {
+    for (let k = 0, hp = effD.hit; hp > 0; k++, hp -= effA.firepwr) {
       let pi = nbd(1 - p, k, toWinD);
       defender.output.unit.pc += pi;
       defender.output.hps[hp - 1] = (pi * 100).toFixed(2);
@@ -395,25 +396,17 @@ function receiveWorkerMessage(event) {
   } else {
     const resultA = event.data.unitA;
     const resultD = event.data.unitD;
-    // let max = 0;
     for (let i = 0; i < resultA.hps.length; i++) {
       attacker.output.hpsa[i - 1] += resultA.hps[i] / 400000;
-      //max = Math.max(max, hps1[i]);
     }
     for (let i = 0; i < resultD.hps.length; i++) {
       defender.output.hpsa[i - 1] += resultD.hps[i] / 400000;
-      //max = Math.max(max, hps2[i]);
     }
     attacker.output.unit.s += resultA.wins;
     defender.output.unit.s += resultD.wins;
     vm.output.s = attacker.output.unit.s + defender.output.unit.s;
     attacker.output.unit.p = (attacker.output.unit.s / vm.output.s * 100).toFixed(2);
     defender.output.unit.p = (defender.output.unit.s / vm.output.s * 100).toFixed(2);
-    //  vm.totHP1 += combatResult.hp1;
-    //  vm.totHP2 += combatResult.hp2;
-    //max = Math.floor(max * 1.05);
-    //myChart1.options.scales.yAxes[0].ticks.max = max;
-    //myChart2.options.scales.yAxes[0].ticks.max = max;
     myChart1.update();
     myChart2.update();
   }
@@ -461,3 +454,14 @@ function initArray(arr, len, first = 0, delta = 0) {
   }
 }
 
+function undefineObjectProperties(obj) {
+  for (const property in obj) {
+    if (obj.hasOwnProperty(property)) {
+      if (typeof (obj[property]) == 'object') {
+        undefineObjectProperties(obj[property])
+      } else {
+        obj[property] = undefined;
+      }
+    }
+  }
+}

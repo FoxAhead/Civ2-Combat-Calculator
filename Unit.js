@@ -4,6 +4,5 @@ export default class Unit {
     this.def = def;
     this.hp = hp;
     this.fp = fp;
-    this.v = v;
   }
 }

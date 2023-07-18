@@ -1,5 +1,3 @@
-import { Civ2 } from "./Civ2.js";
-
 onmessage = function (event) {
   for (let j = 0; j < 100; j++) {
     let combatsResult = {
@@ -36,17 +34,9 @@ function simulateCombat(unitA, unitD) {
   //console.log("Test");
   let hpA = unitA.hit;
   let hpD = unitD.hit;
-  let att = Civ2.getEffectiveAttack(unitA, unitD);
-  let def = Civ2.getEffectiveDefense(unitA, unitD);
-  if (unitA.v) {
-    att += Math.floor(att / 2);
-  }
-  if (unitD.v) {
-    def += Math.floor(def / 2);
-  }
   while ((hpA > 0) && (hpD > 0)) {
-    let dice1 = Math.floor(Math.random() * att);
-    let dice2 = Math.floor(Math.random() * def);
+    let dice1 = Math.floor(Math.random() * unitA.att);
+    let dice2 = Math.floor(Math.random() * unitD.def);
     if (dice1 > dice2) {
       hpD = hpD - unitA.firepwr;
     } else {
