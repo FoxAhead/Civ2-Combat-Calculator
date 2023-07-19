@@ -2,8 +2,8 @@
 // import { TerrainType } from "./TerrainType.js";
 
 export class RulesTxt {
-  static unitTypes = [];
-  static terrainTypes = [];
+  // static unitTypes = [];
+  // static terrainTypes = [];
 
   //   static async loadFromFile(fileName) {
   //     const rulesTxt = await readTextFile(fileName);
