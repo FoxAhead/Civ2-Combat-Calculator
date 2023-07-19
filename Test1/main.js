@@ -1,4 +1,4 @@
-// import { RulesTxt } from "./RulesTxt.js";
+import { RulesTxt } from "./RulesTxt.js";
 // import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
