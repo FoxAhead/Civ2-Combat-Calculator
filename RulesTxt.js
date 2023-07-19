@@ -1,18 +1,27 @@
 import { UnitType } from "./UnitType.js";
 import { TerrainType } from "./TerrainType.js";
 
+const unitTypes = [];
+const terrainTypes = [];
+
 export class RulesTxt {
-  static unitTypes = [];
-  static terrainTypes = [];
 
   static async loadFromFile(fileName) {
     const rulesTxt = await readTextFile(fileName);
-    parseRulesTxt(rulesTxt, this.unitTypes, this.terrainTypes);
+    parseRulesTxt(rulesTxt, unitTypes, terrainTypes);
+  }
+
+  static getUnitType(type) {
+    return unitTypes[type];
+  }
+
+  static getTerrainType(type) {
+    return terrainTypes[type];
   }
 
   static getUnitTypesOptions() {
     let options = [];
-    for (const [index, unit] of this.unitTypes.entries()) {
+    for (const [index, unit] of unitTypes.entries()) {
       options.push({
         // text: `${index}. ${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
         text: `${unit.name} - ${unit.att}a/${unit.def}d/${unit.hit}h/${unit.firepwr}f`,
@@ -23,7 +32,7 @@ export class RulesTxt {
   }
   static getTerrainTypesOptions() {
     let options = [];
-    for (const [index, terrain] of this.terrainTypes.entries()) {
+    for (const [index, terrain] of terrainTypes.entries()) {
       options.push({
         text: `${terrain.name} - ${terrain.defense}d (${terrain.defense * 50}%)`,
         value: options.length
