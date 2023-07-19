@@ -1,4 +1,4 @@
-// import { RulesTxt } from "./RulesTxt.js";
+import { RulesTxt } from "./RulesTxt.js";
 // import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
@@ -63,7 +63,7 @@ function UnitOutput({ s, p0, p, pc } = {}) {
 }
 
 async function main() {
-  // await RulesTxt.loadFromFile('RULES.TXT');
+  await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
   // initCharts();
   // vm.callStartCalc();
@@ -74,10 +74,8 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        // unitTypes: RulesTxt.getUnitTypesOptions(),
-        // terrainTypes: RulesTxt.getTerrainTypesOptions(),
-        unitTypes: [],
-        terrainTypes: [],
+        unitTypes: RulesTxt.getUnitTypesOptions(),
+        terrainTypes: RulesTxt.getTerrainTypesOptions(),
         input: {
           unit: [
             new UnitInput(),
