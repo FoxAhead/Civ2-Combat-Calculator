@@ -84,7 +84,7 @@ function UnitOutput({ s, p0, p, pc } = {}) {
 }
 
 async function main() {
-  await RulesTxt.loadFromFile('RULES.TXT');
+  // await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
   // initCharts();
   // vm.callStartCalc();
@@ -95,8 +95,10 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        unitTypes: RulesTxt.getUnitTypesOptions(),
-        terrainTypes: RulesTxt.getTerrainTypesOptions(),
+        // unitTypes: RulesTxt.getUnitTypesOptions(),
+        // terrainTypes: RulesTxt.getTerrainTypesOptions(),
+        unitTypes: [],
+        terrainTypes: [],
         input: {
           unit: [
             new UnitInput(),
@@ -170,7 +172,8 @@ function initVue() {
         }
       },
       canMakeParadrops(unitIndex) {
-        return (RulesTxt.unitTypes[this.input.unit[unitIndex].type]).canMakeParadrops();
+        // return (RulesTxt.unitTypes[this.input.unit[unitIndex].type]).canMakeParadrops();
+        return true;
       }
     },
     computed: {
