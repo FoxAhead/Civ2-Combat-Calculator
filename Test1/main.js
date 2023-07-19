@@ -72,6 +72,7 @@ function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [] } = {}) {
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
+  asfasf
 }
 
 function UnitOutput({ s, p0, p, pc } = {}) {
