@@ -63,9 +63,9 @@ function UnitOutput({ s, p0, p, pc } = {}) {
 }
 
 async function main() {
-  // await RulesTxt.loadFromFile('RULES.TXT');
+  await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
-  // initCharts();
+  initCharts();
   // vm.callStartCalc();
 }
 
@@ -74,10 +74,8 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        // unitTypes: RulesTxt.getUnitTypesOptions(),
-        // terrainTypes: RulesTxt.getTerrainTypesOptions(),
-        unitTypes: [{ text: 'Text', value: 0 }],
-        terrainTypes: [{ text: 'Text', value: 0 }],
+        unitTypes: RulesTxt.getUnitTypesOptions(),
+        terrainTypes: RulesTxt.getTerrainTypesOptions(),
         input: {
           unit: [
             new UnitInput(),
