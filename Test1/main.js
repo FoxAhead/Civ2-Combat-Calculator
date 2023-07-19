@@ -72,7 +72,6 @@ function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [] } = {}) {
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
-  asfasf
 }
 
 function UnitOutput({ s, p0, p, pc } = {}) {
@@ -489,18 +488,18 @@ function initArray(arr, len, first = 0, delta = 0) {
   }
 }
 
-function undefineObjectProperties(obj) {
-  if (obj instanceof Array) {
-    obj.length = 0;
-  } else {
-    for (const property in obj) {
-      if (obj.hasOwnProperty(property)) {
-        if (typeof (obj[property]) == 'object') {
-          undefineObjectProperties(obj[property])
-        } else {
-          obj[property] = undefined;
-        }
-      }
-    }
-  }
-}
+// function undefineObjectProperties(obj) {
+//   if (obj instanceof Array) {
+//     obj.length = 0;
+//   } else {
+//     for (const property in obj) {
+//       if (obj.hasOwnProperty(property)) {
+//         if (typeof (obj[property]) == 'object') {
+//           undefineObjectProperties(obj[property])
+//         } else {
+//           obj[property] = undefined;
+//         }
+//       }
+//     }
+//   }
+// }
