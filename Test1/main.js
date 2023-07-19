@@ -1,4 +1,4 @@
-import { RulesTxt } from "./RulesTxt.js";
+// import { RulesTxt } from "./RulesTxt.js";
 // import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
@@ -74,8 +74,10 @@ function initVue() {
     data() {
       return {
         workersCount: 0,
-        unitTypes: RulesTxt.getUnitTypesOptions(),
-        terrainTypes: RulesTxt.getTerrainTypesOptions(),
+        // unitTypes: RulesTxt.getUnitTypesOptions(),
+        // terrainTypes: RulesTxt.getTerrainTypesOptions(),
+        unitTypes: [{ text: 'Text', value: 0 }],
+        terrainTypes: [{ text: 'Text', value: 0 }],
         input: {
           unit: [
             new UnitInput(),
