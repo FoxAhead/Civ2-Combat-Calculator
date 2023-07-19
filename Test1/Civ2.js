@@ -2,13 +2,14 @@ import { RulesTxt } from "./RulesTxt.js";
 
 const TYPE_PARTISANS = 9;
 
+const m = 8;
+const m2 = 4;
+
 export class Civ2 {
-  static m = 8;
-  static m2 = 4;
 
   static getEffectiveAttack(attacker, defender, explain) {
-    let att = attacker.att * this.m;
-    explain.push(`x${this.m} = ${att}`);
+    let att = attacker.att * m;
+    explain.push(`x${m} = ${att}`);
     if (attacker.veteran) {
       att += Math.floor(att / 2);
       explain.push(`Veteran: x1.5 = ${att}`);
@@ -25,11 +26,11 @@ export class Civ2 {
   }
 
   static getEffectiveDefense(attacker, defender, explain) {
-    let def = defender.def * this.m2;
-    explain.push(`x${this.m2} = ${def}`);
-    let attackerUnitType = RulesTxt.unitTypes[attacker.type];
-    let defenderUnitType = RulesTxt.unitTypes[defender.type];
-    let terrain = RulesTxt.terrainTypes[defender.terrain];
+    let def = defender.def * m2;
+    explain.push(`x${m2} = ${def}`);
+    let attackerUnitType = RulesTxt.getUnitType(attacker.type);
+    let defenderUnitType = RulesTxt.getUnitType(defender.type);
+    let terrain = RulesTxt.getTerrainType(defender.terrain);
     let explainText = '';
     if (defender.river) {
       def *= (terrain.defense + 1);
@@ -88,8 +89,8 @@ export class Civ2 {
   }
 
   static setEffectives(attackerInput, defenderInput, attackerEffective, defenderEffective, attackerExplain, defenderExplain) {
-    let attackerUnitType = RulesTxt.unitTypes[attackerInput.type];
-    let defenderUnitType = RulesTxt.unitTypes[defenderInput.type];
+    let attackerUnitType = RulesTxt.getUnitType(attackerInput.type);
+    let defenderUnitType = RulesTxt.getUnitType(defenderInput.type);
 
     attackerEffective.att = this.getEffectiveAttack(attackerInput, defenderInput, attackerExplain.att);
     attackerEffective.def = undefined;

@@ -11,6 +11,14 @@ export class RulesTxt {
     parseRulesTxt(rulesTxt, unitTypes, terrainTypes);
   }
 
+  static getUnitType(type) {
+    return unitTypes[type];
+  }
+
+  static getTerrainType(type) {
+    return terrainTypes[type];
+  }
+
   static getUnitTypesOptions() {
     let options = [];
     for (const [index, unit] of unitTypes.entries()) {
