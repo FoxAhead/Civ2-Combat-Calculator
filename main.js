@@ -2,6 +2,27 @@ import { RulesTxt } from "./RulesTxt.js";
 import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
+window.addEventListener('unhandledrejection', function (e) {
+  alert("Error occurred: " + e.reason.message);
+})
+window.onerror = function (error, source, lineno, colno, erroro) {
+
+  // Print the error message
+  let output = document.getElementById("errors");
+  output.innerHTML += "Message : " + error + "<br>";
+
+  // Print the url of the file that contains the error
+  output.innerHTML += "Url : " + source + "<br>";
+
+  // Print the line number from which the error generated
+  output.innerHTML += "Line number : " + lineno + "<br>";
+
+  // Print the column number of the error line
+  output.innerHTML += "Column number : " + colno + "<br>";
+
+  // Print he error object
+  output.innerHTML += "Error Object : " + erroro;
+}
 
 const labels1 = [];
 const labels2 = [];
