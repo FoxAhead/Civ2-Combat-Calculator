@@ -1,20 +1,22 @@
 onmessage = function (event) {
+  let combatsResult = {
+    finished: false,
+    unitA: {
+      hps: [],
+      wins: 0
+    },
+    unitD: {
+      hps: [],
+      wins: 0
+    },
+  };
+  combatsResult.unitA.hps.length = event.data.unitA.hit + 1;
+  combatsResult.unitD.hps.length = event.data.unitD.hit + 1;
   for (let j = 0; j < 100; j++) {
-    let combatsResult = {
-      finished: false,
-      unitA: {
-        hps: [],
-        wins: 0
-      },
-      unitD: {
-        hps: [],
-        wins: 0
-      },
-    };
-    combatsResult.unitA.hps.length = event.data.unitA.hit + 1;
-    combatsResult.unitD.hps.length = event.data.unitD.hit + 1;
     combatsResult.unitA.hps.fill(0);
     combatsResult.unitD.hps.fill(0);
+    combatsResult.unitA.wins = 0;
+    combatsResult.unitD.wins = 0;
     for (let i = 0; i < 100000; i++) {
       let combatResult = simulateCombat(event.data.unitA, event.data.unitD);
       if (combatResult.hpA > 0) {

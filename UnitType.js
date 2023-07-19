@@ -27,7 +27,13 @@ export class UnitType {
   canMakeParadrops() {
     return (this.flags & 0b000000100000000) != 0;
   }
+  x2OnDefenseVersusHorsePikemen() {
+    return (this.flags & 0b000010000000000) != 0;
+  }
   destroyedAfterAttackingMissiles() {
     return (this.flags & 0b001000000000000) != 0;
+  }
+  x2OnDefenseVersusAirAEGIS() {
+    return (this.flags & 0b010000000000000) != 0;
   }
 }

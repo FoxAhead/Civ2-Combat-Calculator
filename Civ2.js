@@ -43,14 +43,14 @@ export class Civ2 {
       dword_6ACB34 = 3;
       explainText = `Fortified`;
     }
-    if (defender.fortification == 'Fortress') {
+    if (defender.location == 'Fortress') {
       if (attackerUnitType.domain != 1 && !attackerUnitType.negatesCityWallsHowitzer()) {
         dword_6ACB34 = 4;
         explainText = `Fortress`;
       }
     }
     while (true) {
-      if (defender.fortification == 'City' || defender.fortification == 'Walls') {
+      if (defender.location == 'City') {
         if (defenderUnitType.domain == 1 && defenderUnitType.canAttackAirUnitsFighter()) {
           if (attackerUnitType.domain == 1 && !attackerUnitType.destroyedAfterAttackingMissiles()) {
             if (attackerUnitType.canAttackAirUnitsFighter()) {
@@ -63,11 +63,11 @@ export class Civ2 {
             break;
           }
         }
-      }
-      if (defender.fortification == 'Walls' && defenderUnitType.domain == 0) {
-        if (attackerUnitType.domain == 0 && !attackerUnitType.negatesCityWallsHowitzer()) {
-          dword_6ACB34 = 6;
-          explainText = `City Walls or Great Wall`;
+        if (defender.city.walls && defenderUnitType.domain == 0) {
+          if (attackerUnitType.domain == 0 && !attackerUnitType.negatesCityWallsHowitzer()) {
+            dword_6ACB34 = 6;
+            explainText = `City Walls or Great Wall`;
+          }
         }
       }
       if (defenderUnitType.domain != 0) {
@@ -84,16 +84,6 @@ export class Civ2 {
       def += Math.floor(def / 2);
       explain.push(`Veteran: x1.5 = ${def}`);
     }
-    // if (defender.fortification == 'Walls') {
-    //   def *= 3;
-    //   explain.push(`City Walls: x3 = ${def}`);
-    // } else if (defender.fortification == 'Fortress') {
-    //   def *= 2;
-    //   explain.push(`Fortress: x2 = ${def}`);
-    // } else if (defender.fortified) {
-    //   def += Math.floor(def / 2);
-    //   explain.push(`Fortified: x1.5 = ${def}`);
-    // }
     return def;
   }
 
@@ -111,21 +101,69 @@ export class Civ2 {
     defenderEffective.hit = defenderInput.hit;
     defenderEffective.firepwr = defenderInput.firepwr;
 
-    // Helicopter
-    if (defenderUnitType.domain == 1 && defenderUnitType.rng == 0 && attackerUnitType.role == 3) {
+    // Helicopter vs Fighter
+    if (attackerUnitType.role == 3 && defenderUnitType.domain == 1 && defenderUnitType.rng == 0) {
       defenderEffective.firepwr = 1;
-      defenderEffective.def = Math.floor(defenderEffective.def / 2);
+      defenderExplain.firepwr.push(`Helicopter vs Fighter: = ${defenderEffective.firepwr}`);
+      defenderEffective.def -= Math.floor(defenderEffective.def / 2);
+      defenderExplain.def.push(`Helicopter vs Fighter: -50% = ${defenderEffective.def}`);
+    }
+    // Pikemen vs mounted
+    if (defenderUnitType.x2OnDefenseVersusHorsePikemen()) {
+      if (attackerUnitType.move == 2 && attackerUnitType.domain == 0 && attackerInput.hit == 10) {
+        defenderEffective.def += Math.floor(defenderEffective.def / 2);
+        defenderExplain.def.push(`Pikemen vs mounted: x1.5 = ${defenderEffective.def}`);
+      }
+    }
+    // AEGIS
+    if (defenderUnitType.x2OnDefenseVersusAirAEGIS() && attackerUnitType.domain == 1) {
+      if (attackerUnitType.destroyedAfterAttackingMissiles()) {
+        defenderEffective.def *= 5;
+        defenderExplain.def.push(`AEGIS vs Missile: x5 = ${defenderEffective.def}`);
+      } else {
+        defenderEffective.def *= 3;
+        defenderExplain.def.push(`AEGIS vs air: x3 = ${defenderEffective.def}`);
+      }
+    }
+    // Coastal Fortress
+    if (defenderInput.location == 'City' && attackerUnitType.domain == 2 && defenderUnitType.domain != 2) {
+      if (defenderInput.city.coastal) {
+        defenderEffective.def *= 2;
+        defenderExplain.def.push(`Coastal Fortress: x2 = ${defenderEffective.def}`);
+      }
+    }
+    // City air defense
+    if (defenderInput.location == 'City' && attackerUnitType.domain == 1) {
+      if (!defenderUnitType.canAttackAirUnitsFighter() || attackerUnitType.destroyedAfterAttackingMissiles()) {
+        if (defenderInput.city.sdi) {
+          if (attackerUnitType.destroyedAfterAttackingMissiles() && attackerInput.att < 99) {
+            defenderEffective.def *= 2;
+            defenderExplain.def.push(`SDI Defense vs Missile: x2 = ${defenderEffective.def}`);
+          }
+        }
+        if (defenderInput.city.sam) {
+          defenderEffective.def *= 2;
+          defenderExplain.def.push(`SAM Missile Battery: x2 = ${defenderEffective.def}`);
+        }
+      }
     }
     // Shore bombardment
     if (attackerUnitType.domain == 2 && defenderUnitType.domain == 0) {
       attackerEffective.firepwr = 1;
-      attackerExplain.firepwr.push('Shore bombardment: = 1');
+      attackerExplain.firepwr.push(`Shore bombardment: = ${attackerEffective.firepwr}`);
       defenderEffective.firepwr = 1;
-      defenderExplain.firepwr.push('Shore bombardment: = 1');
+      defenderExplain.firepwr.push(`Shore bombardment: = ${defenderEffective.firepwr}`);
     }
     // Submarine flag
     if (defenderUnitType.submarineAdvantagesDisadvantages()) {
       defenderEffective.firepwr = 1;
+    }
+    // Caught in port
+    if (defenderUnitType.domain == 2 && defenderInput.location == 'City' && attackerUnitType.domain != 2) {
+      defenderEffective.firepwr = 1;
+      defenderExplain.firepwr.push(`Caught in port: = ${defenderEffective.firepwr}`);
+      attackerEffective.firepwr *= 2;
+      attackerExplain.firepwr.push(`Caught in port: x2 = ${attackerEffective.firepwr}`);
     }
   }
 }

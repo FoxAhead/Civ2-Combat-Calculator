@@ -24,7 +24,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, fortification = 'None' } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = 'Open' } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -35,7 +35,8 @@ function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = 
   this.veteran = veteran;
   this.fortified = fortified;
   this.paradrop = paradrop;
-  this.fortification = fortification;
+  this.location = location;
+  this.city = { walls: false, coastal: false, sdi: false, sam: false };
 }
 
 function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0 } = {}) {
