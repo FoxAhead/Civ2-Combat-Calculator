@@ -86,8 +86,8 @@ function UnitOutput({ s, p0, p, pc } = {}) {
 async function main() {
   await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
-  initCharts();
-  vm.callStartCalc();
+  // initCharts();
+  // vm.callStartCalc();
 }
 
 function initVue() {
@@ -198,11 +198,11 @@ function initVue() {
         deep: true
       },
     },
-    mounted() {
-      // console.log('mounted');
-      this.moveUnitsValuesToForm(0);
-      this.moveUnitsValuesToForm(1);
-    }
+    // mounted() {
+    //   // console.log('mounted');
+    //   this.moveUnitsValuesToForm(0);
+    //   this.moveUnitsValuesToForm(1);
+    // }
   })
 
   vm = app.mount('#app')
