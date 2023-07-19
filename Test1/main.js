@@ -1,5 +1,5 @@
-import { RulesTxt } from "./RulesTxt.js";
-import { Civ2 } from "./Civ2.js";
+// import { RulesTxt } from "./RulesTxt.js";
+// import { Civ2 } from "./Civ2.js";
 
 window.onload = main;
 
@@ -96,10 +96,10 @@ function initVue() {
     },
     methods: {
       onClickStart() {
-        startSim();
+        // startSim();
       },
       onClickStop() {
-        stopSim();
+        // stopSim();
       },
       onClickArrow() {
         this.input.attackingUnit = 1 - this.input.attackingUnit;
@@ -122,33 +122,33 @@ function initVue() {
         // }
       },
       callStartCalc() {
-        let data1 = {
-          input: {
-            unit: this.input.unit[0],
-          },
-          output: {
-            unit: this.output.unit[0],
-            labels: labels1,
-            hps: hps1,
-            hpsa: hps1a,
-          }
-        };
-        let data2 = {
-          input: {
-            unit: this.input.unit[1],
-          },
-          output: {
-            unit: this.output.unit[1],
-            labels: labels2,
-            hps: hps2,
-            hpsa: hps2a,
-          }
-        };
-        if (this.input.attackingUnit == 0) {
-          startCalc(data1, data2);
-        } else {
-          startCalc(data2, data1);
-        }
+        // let data1 = {
+        //   input: {
+        //     unit: this.input.unit[0],
+        //   },
+        //   output: {
+        //     unit: this.output.unit[0],
+        //     labels: labels1,
+        //     hps: hps1,
+        //     hpsa: hps1a,
+        //   }
+        // };
+        // let data2 = {
+        //   input: {
+        //     unit: this.input.unit[1],
+        //   },
+        //   output: {
+        //     unit: this.output.unit[1],
+        //     labels: labels2,
+        //     hps: hps2,
+        //     hpsa: hps2a,
+        //   }
+        // };
+        // if (this.input.attackingUnit == 0) {
+        //   startCalc(data1, data2);
+        // } else {
+        //   startCalc(data2, data1);
+        // }
       },
       canMakeParadrops(unitIndex) {
         // return (RulesTxt.unitTypes[this.input.unit[unitIndex].type]).canMakeParadrops();
@@ -173,9 +173,9 @@ function initVue() {
       input: {
         handler(newValue, oldValue) {
           // console.log('input');
-          this.checkInput(0);
-          this.checkInput(1);
-          this.callStartCalc();
+          // this.checkInput(0);
+          // this.checkInput(1);
+          // this.callStartCalc();
         },
         deep: true
       },
