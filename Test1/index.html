@@ -19,27 +19,27 @@
     <div class="container">
       <form @submit.prevent="" novalidate>
         <!-- Unit Types -->
-        <!-- <div class="row justify-content-center align-items-center text-center"> -->
-        <!-- <div class="col-1 text-secondary">{{ input.unit[0].type }}</div> -->
-        <!-- <div class="col-lg-3 col-5">
+        <div class="row justify-content-center align-items-center text-center">
+          <!-- <div class="col-1 text-secondary">{{ input.unit[0].type }}</div> -->
+          <div class="col-lg-3 col-5">
             <select class="form-select text-center border-primary" aria-label="Select unit 1" v-model="input.unit[0].type" @change="moveUnitsValuesToForm(0)">
               <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
           </div>
-          <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow">{{ getAttackArrow }}</button></div> -->
-        <!-- <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow"><i class="bi bi-arrow-right"></i></button></div> -->
-        <!-- <div class=" col-2 text-center"><button type="button" class="btn btn-outline-primary bi bi-arrow-right" :class="getAttackColor" @click="onClickArrow"></button></div> -->
-        <!-- <div class="col-lg-3 col-5">
+          <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow">{{ getAttackArrow }}</button></div>
+          <!-- <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow"><i class="bi bi-arrow-right"></i></button></div> -->
+          <!-- <div class=" col-2 text-center"><button type="button" class="btn btn-outline-primary bi bi-arrow-right" :class="getAttackColor" @click="onClickArrow"></button></div> -->
+          <div class="col-lg-3 col-5">
             <select class="form-select text-center border-danger" aria-label="Select unit 2" v-model="input.unit[1].type" @change="moveUnitsValuesToForm(1)">
               <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
             </select>
-          </div> -->
-        <!-- <div class="col-1 text-secondary">{{ input.unit[1].type }}</div> -->
-        <!-- </div> -->
+          </div>
+          <!-- <div class="col-1 text-secondary">{{ input.unit[1].type }}</div> -->
+        </div>
         <!-- Attack -->
         <div class="row justify-content-center align-items-center text-center">
           <!-- <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.att.join('\r\n')" tabindex="-1">{{ output.unit[0].effective.att }}</abbr></div> -->
