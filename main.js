@@ -1,27 +1,6 @@
 import { RulesTxt } from "./RulesTxt.js";
 import { Civ2 } from "./Civ2.js";
 
-window.addEventListener('unhandledrejection', function (e) {
-  alert("Error occurred: " + e.reason.message);
-})
-window.onerror = function (error, source, lineno, colno, erroro) {
-
-  // Print the error message
-  let output = document.getElementById("errors");
-  output.innerHTML += "Message : " + error + "<br>";
-
-  // Print the url of the file that contains the error
-  output.innerHTML += "Url : " + source + "<br>";
-
-  // Print the line number from which the error generated
-  output.innerHTML += "Line number : " + lineno + "<br>";
-
-  // Print the column number of the error line
-  output.innerHTML += "Column number : " + colno + "<br>";
-
-  // Print he error object
-  output.innerHTML += "Error Object : " + erroro;
-}
 window.onload = main;
 
 const labels1 = [];
@@ -125,7 +104,7 @@ function initVue() {
       },
       moveUnitsValuesToForm(unitIndex) {
         // console.log('moveUnitsValuesToForm');
-        const unit = RulesTxt.unitTypes[this.input.unit[unitIndex].type];
+        const unit = RulesTxt.getUnitType(this.input.unit[unitIndex].type);
         if (unit != undefined) {
           this.input.unit[unitIndex].att = unit.att;
           this.input.unit[unitIndex].def = unit.def;
@@ -134,7 +113,7 @@ function initVue() {
         }
       },
       checkInput(unitIndex) {
-        if (!RulesTxt.unitTypes[this.input.unit[unitIndex].type].canMakeParadrops && this.input.unit[unitIndex].paradrop) { //Can make paradrops
+        if (!RulesTxt.getUnitType(this.input.unit[unitIndex].type).canMakeParadrops && this.input.unit[unitIndex].paradrop) { //Can make paradrops
           this.$nextTick(() => {
             this.input.unit[unitIndex].paradrop = false;
           });
@@ -170,7 +149,7 @@ function initVue() {
         }
       },
       canMakeParadrops(unitIndex) {
-        return (RulesTxt.unitTypes[this.input.unit[unitIndex].type]).canMakeParadrops();
+        return (RulesTxt.getUnitType(this.input.unit[unitIndex].type)).canMakeParadrops();
       }
     },
     computed: {
@@ -382,7 +361,7 @@ function calculate(attacker, defender) {
 }
 
 /**
- * Negative binomial distribution 
+ * Negative binomial distribution
  * @param {float} p - probability of success
  * @param {integer} k - number of failures
  * @param {integer} r - number of successes
