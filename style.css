@@ -31,8 +31,10 @@ label.btn {
   padding: 0 !important;
 }
 
-.version {
-  font-size: 10px;
+select:focus,
+input[type="number"] {
+  font-size: 16px;
+  padding: 0.25rem;
 }
 
 abbr[title1] {
