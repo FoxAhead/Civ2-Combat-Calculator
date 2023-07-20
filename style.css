@@ -35,13 +35,13 @@ select,
 select:focus,
 input[type="number"] {
   font-size: 16px !important;
-  padding: 0.25rem !important;
+  padding: .25rem 1.5rem .25rem .25rem !important;
 }
 
 abbr[title1] {
   position: relative;
   /* ensure consistent styling across browsers */
-  text-decoration: underline dotted;
+  text-decoration: underline dotted !important;
   cursor: help;
 }
 

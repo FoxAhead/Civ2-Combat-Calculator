@@ -353,6 +353,7 @@ function calculate(attacker, defender) {
     attacker.output.unit.p0 = (p * 100).toFixed(2);
     defender.output.unit.p0 = (100 - attacker.output.unit.p0).toFixed(2);
     max = max * 1.05;
+    max = parseFloat(max.toPrecision(2));
     myChart1.options.scales.yAxes[0].ticks.max = max;
     myChart2.options.scales.yAxes[0].ticks.max = max;
   }
