@@ -31,10 +31,11 @@ label.btn {
   padding: 0 !important;
 }
 
+select,
 select:focus,
 input[type="number"] {
-  font-size: 16px;
-  padding: 0.25rem;
+  font-size: 16px !important;
+  padding: 0.25rem !important;
 }
 
 abbr[title1] {
