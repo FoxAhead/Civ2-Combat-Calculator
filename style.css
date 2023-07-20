@@ -42,6 +42,7 @@ abbr[title1] {
   position: relative;
   /* ensure consistent styling across browsers */
   text-decoration: underline dotted !important;
+  -webkit-text-decoration: underline dotted !important;
   cursor: help;
 }
 

@@ -165,6 +165,9 @@ function initVue() {
         // console.log("showStop");
         return (this.workersCount > 0);
       },
+      getLastModified() {
+        return document.lastModified;
+      }
     },
     watch: {
       input: {
