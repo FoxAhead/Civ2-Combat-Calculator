@@ -77,3 +77,8 @@ abbr[tabindex="-2"]:hover::after,
 abbr[tabindex="-2"]:focus::after {
   right: 105%;
 }
+
+.noneClickButtons>label {
+  pointer-events: none;
+  opacity: 0.5;
+}

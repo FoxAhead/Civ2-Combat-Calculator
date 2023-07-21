@@ -18,6 +18,10 @@ export class Civ2 {
       att += Math.floor(att / 2);
       explain.push(`Paradrop: x1.5 = ${att}`);
     }
+    if (attacker.strength < 3) {
+      att = Math.floor(att * attacker.strength / 3);
+      explain.push(`x${attacker.strength}/3 strength = ${att}`);
+    }
     if (attacker.type == TYPE_PARTISANS && defender.att == 0) {
       att *= 8;
       explain.push(`Partisans vs 0a: x8 = ${att}`);

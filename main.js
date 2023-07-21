@@ -24,7 +24,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = 'Open' } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = 'Open', strength = 3 } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -37,6 +37,7 @@ function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = 
   this.paradrop = paradrop;
   this.location = location;
   this.city = { walls: false, coastal: false, sdi: false, sam: false };
+  this.strength = strength;
 }
 
 function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0 } = {}) {
@@ -148,8 +149,14 @@ function initVue() {
           startCalc(data2, data1);
         }
       },
-      canMakeParadrops(unitIndex) {
+      showParadrop(unitIndex) {
         return (RulesTxt.getUnitType(this.input.unit[unitIndex].type)).canMakeParadrops();
+      },
+      isAttackingUnit(unitIndex) {
+        return this.input.attackingUnit == unitIndex;
+      },
+      showCity(unitIndex) {
+        return !this.isAttackingUnit(unitIndex) && (this.input.unit[unitIndex].location == 'City');
       }
     },
     computed: {

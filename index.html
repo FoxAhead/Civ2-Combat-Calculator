@@ -120,63 +120,83 @@
             <input type="checkbox" class="btn-check" id="inputUnit1Veteran" v-model="input.unit[0].veteran">
             <label class="btn btn-outline-primary" for="inputUnit1Veteran">Veteran</label>
             <input type="checkbox" class="btn-check" id="inputUnit1Fortified" v-model="input.unit[0].fortified">
-            <label class="btn btn-outline-primary" for="inputUnit1Fortified">Fortified</label>
+            <label class="btn btn-outline-primary" for="inputUnit1Fortified" v-show="!isAttackingUnit(0)">Fortified</label>
             <input type="checkbox" class="btn-check" id="inputUnit1Paradrop" v-model="input.unit[0].paradrop">
-            <label class="btn btn-outline-primary" for="inputUnit1Paradrop" v-show="canMakeParadrops(0)">Paradrop</label>
+            <label class="btn btn-outline-primary" for="inputUnit1Paradrop" v-show="showParadrop(0)">Paradrop</label>
           </div>
           <div class="col-lg-4 col-6">
             <input type="checkbox" class="btn-check" id="inputUnit2Veteran" v-model="input.unit[1].veteran">
             <label class="btn btn-outline-danger" for="inputUnit2Veteran">Veteran</label>
             <input type="checkbox" class="btn-check" id="inputUnit2Fortified" v-model="input.unit[1].fortified">
-            <label class="btn btn-outline-danger" for="inputUnit2Fortified">Fortified</label>
+            <label class="btn btn-outline-danger" for="inputUnit2Fortified" v-show="!isAttackingUnit(1)">Fortified</label>
             <input type="checkbox" class="btn-check" id="inputUnit2Paradrop" v-model="input.unit[1].paradrop">
-            <label class="btn btn-outline-danger" for="inputUnit2Paradrop" v-show="canMakeParadrops(1)">Paradrop</label>
+            <label class="btn btn-outline-danger" for="inputUnit2Paradrop" v-show="showParadrop(1)">Paradrop</label>
           </div>
         </div>
-        <!-- Location -->
+        <!-- Location, Strength -->
         <div class="row justify-content-center text-center">
           <div class="col-lg-4 col-6">
-            <div class="btn-group" role="group">
+            <div class="btn-group" role="group" v-show="isAttackingUnit(0)">
+              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength3" v-model="input.unit[0].strength" value="3" checked>
+              <label class="btn btn-outline-primary" for="inputUnit1Strength3">Full strength</label>
+              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength2" v-model="input.unit[0].strength" value="2">
+              <label class="btn btn-outline-primary" for="inputUnit1Strength2">2/3</label>
+              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength1" v-model="input.unit[0].strength" value="1">
+              <label class="btn btn-outline-primary" for="inputUnit1Strength1">1/3</label>
+            </div>
+            <div class="btn-group" role="group" v-show="!isAttackingUnit(0)">
               <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Open" v-model="input.unit[0].location" value="Open" checked>
               <label class="btn btn-outline-primary" for="inputUnit1Open">Open</label>
-              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1City" v-model="input.unit[0].location" value="City">
-              <label class="btn btn-outline-primary" for="inputUnit1City">City</label>
               <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Fortress" v-model="input.unit[0].location" value="Fortress">
               <label class="btn btn-outline-primary" for="inputUnit1Fortress">Fortress</label>
+              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1City" v-model="input.unit[0].location" value="City">
+              <label class="btn btn-outline-primary" for="inputUnit1City">City</label>
             </div>
           </div>
           <div class="col-lg-4 col-6">
-            <div class="btn-group" role="group">
+            <div class="btn-group" role="group" v-show="isAttackingUnit(1)">
+              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength3" v-model="input.unit[1].strength" value="3" checked>
+              <label class="btn btn-outline-danger" for="inputUnit2Strength3">Full strength</label>
+              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength2" v-model="input.unit[1].strength" value="2">
+              <label class="btn btn-outline-danger" for="inputUnit2Strength2">2/3</label>
+              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength1" v-model="input.unit[1].strength" value="1">
+              <label class="btn btn-outline-danger" for="inputUnit2Strength1">1/3</label>
+            </div>
+            <div class="btn-group" role="group" v-show="!isAttackingUnit(1)">
               <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Open" v-model="input.unit[1].location" value="Open" checked>
               <label class="btn btn-outline-danger p-1" for="inputUnit2Open">Open</label>
-              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2City" v-model="input.unit[1].location" value="City">
-              <label class="btn btn-outline-danger" for="inputUnit2City">City</label>
               <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Fortress" v-model="input.unit[1].location" value="Fortress">
               <label class="btn btn-outline-danger p-1" for="inputUnit2Fortress">Fortress</label>
+              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2City" v-model="input.unit[1].location" value="City">
+              <label class="btn btn-outline-danger" for="inputUnit2City">City</label>
             </div>
           </div>
         </div>
         <!-- City Improvements -->
         <div class="row justify-content-center text-center">
           <div class="col-lg-4 col-6">
-            <input type="checkbox" class="btn-check" id="inputUnit1CityWalls" v-model="input.unit[0].city.walls">
-            <label class="btn btn-outline-primary" for="inputUnit1CityWalls">Walls</label>
-            <input type="checkbox" class="btn-check" id="inputUnit1CityCoastal" v-model="input.unit[0].city.coastal">
-            <label class="btn btn-outline-primary" for="inputUnit1CityCoastal">Coastal</label>
-            <input type="checkbox" class="btn-check" id="inputUnit1CitySDI" v-model="input.unit[0].city.sdi">
-            <label class="btn btn-outline-primary" for="inputUnit1CitySDI">SDI</label>
-            <input type="checkbox" class="btn-check" id="inputUnit1CitySAM" v-model="input.unit[0].city.sam">
-            <label class="btn btn-outline-primary" for="inputUnit1CitySAM">SAM</label>
+            <div :class="showCity(0)?'':'noneClickButtons'" v-show="!isAttackingUnit(0)">
+              <input type="checkbox" class="btn-check" id="inputUnit1CityWalls" v-model="input.unit[0].city.walls">
+              <label class="btn btn-outline-primary" for="inputUnit1CityWalls">Walls</label>
+              <input type="checkbox" class="btn-check" id="inputUnit1CityCoastal" v-model="input.unit[0].city.coastal">
+              <label class="btn btn-outline-primary" for="inputUnit1CityCoastal">Coastal</label>
+              <input type="checkbox" class="btn-check" id="inputUnit1CitySDI" v-model="input.unit[0].city.sdi">
+              <label class="btn btn-outline-primary" for="inputUnit1CitySDI">SDI</label>
+              <input type="checkbox" class="btn-check" id="inputUnit1CitySAM" v-model="input.unit[0].city.sam">
+              <label class="btn btn-outline-primary" for="inputUnit1CitySAM">SAM</label>
+            </div>
           </div>
           <div class="col-lg-4 col-6">
-            <input type="checkbox" class="btn-check" id="inputUnit2CityWalls" v-model="input.unit[1].city.walls">
-            <label class="btn btn-outline-danger" for="inputUnit2CityWalls">Walls</label>
-            <input type="checkbox" class="btn-check" id="inputUnit2CityCoastal" v-model="input.unit[1].city.coastal">
-            <label class="btn btn-outline-danger" for="inputUnit2CityCoastal">Coastal</label>
-            <input type="checkbox" class="btn-check" id="inputUnit2CitySDI" v-model="input.unit[1].city.sdi">
-            <label class="btn btn-outline-danger" for="inputUnit2CitySDI">SDI</label>
-            <input type="checkbox" class="btn-check" id="inputUnit2CitySAM" v-model="input.unit[1].city.sam">
-            <label class="btn btn-outline-danger" for="inputUnit2CitySAM">SAM</label>
+            <div :class="showCity(1)?'':'noneClickButtons'" v-show="!isAttackingUnit(1)">
+              <input type="checkbox" class="btn-check" id="inputUnit2CityWalls" v-model="input.unit[1].city.walls">
+              <label class="btn btn-outline-danger" for="inputUnit2CityWalls">Walls</label>
+              <input type="checkbox" class="btn-check" id="inputUnit2CityCoastal" v-model="input.unit[1].city.coastal">
+              <label class="btn btn-outline-danger" for="inputUnit2CityCoastal">Coastal</label>
+              <input type="checkbox" class="btn-check" id="inputUnit2CitySDI" v-model="input.unit[1].city.sdi">
+              <label class="btn btn-outline-danger" for="inputUnit2CitySDI">SDI</label>
+              <input type="checkbox" class="btn-check" id="inputUnit2CitySAM" v-model="input.unit[1].city.sam">
+              <label class="btn btn-outline-danger" for="inputUnit2CitySAM">SAM</label>
+            </div>
           </div>
         </div>
         <!-- Chances -->
@@ -237,7 +257,7 @@
           <div class="col-6 text-center">{{ totHP2 }}</div>
         </div> -->
       </form>
-      <div class="small">Version 25 ({{ getLastModified }})</div>
+      <div class="small">Version 26 ({{ getLastModified }})</div>
     </div>
   </div>
 
@@ -251,4 +271,3 @@
 </body>
 
 </html>
-</head>
