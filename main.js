@@ -157,6 +157,9 @@ function initVue() {
       },
       showCity(unitIndex) {
         return !this.isAttackingUnit(unitIndex) && (this.input.unit[unitIndex].location == 'City');
+      },
+      showEffFirepwr(unitIndex) {
+        return this.output.unit[unitIndex].explain.firepwr.length > 0;
       }
     },
     computed: {

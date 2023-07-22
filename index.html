@@ -17,7 +17,7 @@
   </header>
   <div id="app">
     <div class="container">
-      <form @submit.prevent="" novalidate>
+      <form @submit.prevent="" novalidate v-cloak>
         <!-- Unit Types -->
         <div class="row justify-content-center align-items-center text-center">
           <!-- <div class="col-1 text-secondary">{{ input.unit[0].type }}</div> -->
@@ -42,7 +42,7 @@
         </div>
         <!-- Attack -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.att.join('\r\n')" tabindex="-1">{{ output.unit[0].effective.att }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.att.join('\r\n')" tabindex="-1" v-show="isAttackingUnit(0)">{{ output.unit[0].effective.att }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-primary" id="inputUnit1Att" v-model="input.unit[0].att">
           </div>
@@ -50,11 +50,11 @@
           <div class=" col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-danger" id="inputUnit2Att" v-model="input.unit[1].att">
           </div>
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.att.join('\r\n')" tabindex="-2">{{ output.unit[1].effective.att }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.att.join('\r\n')" tabindex="-2" v-show="isAttackingUnit(1)">{{ output.unit[1].effective.att }}</abbr></div>
         </div>
         <!-- Defense -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.def.join('\r\n')" tabindex="-1">{{ output.unit[0].effective.def }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.def.join('\r\n')" tabindex="-1" v-show="!isAttackingUnit(0)">{{ output.unit[0].effective.def }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-primary" id="inputUnit1Def" v-model="input.unit[0].def">
           </div>
@@ -62,7 +62,7 @@
           <div class="col-lg-2 col-3">
             <input type="number" min="0" class="form-control border-danger" id="inputUnit2Def" v-model="input.unit[1].def">
           </div>
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.def.join('\r\n')" tabindex="-2">{{ output.unit[1].effective.def }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.def.join('\r\n')" tabindex="-2" v-show="!isAttackingUnit(1)">{{ output.unit[1].effective.def }}</abbr></div>
         </div>
         <!-- Hit Points -->
         <div class="row justify-content-center align-items-center text-center">
@@ -78,7 +78,7 @@
         </div>
         <!-- Fire Power -->
         <div class="row justify-content-center align-items-center text-center">
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.firepwr.join('\r\n')" tabindex="-1">{{ output.unit[0].effective.firepwr }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[0].explain.firepwr.join('\r\n')" tabindex="-1" v-show="showEffFirepwr(0)">{{ output.unit[0].effective.firepwr }}</abbr></div>
           <div class="col-lg-2 col-3">
             <input type="number" min="1" class="form-control border-primary" id="inputUnit1FP" v-model="input.unit[0].firepwr">
           </div>
@@ -86,7 +86,7 @@
           <div class="col-lg-2 col-3">
             <input type="number" min="1" class="form-control border-danger" id="inputUnit2FP" v-model="input.unit[1].firepwr">
           </div>
-          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.firepwr.join('\r\n')" tabindex="-2">{{ output.unit[1].effective.firepwr }}</abbr></div>
+          <div class="col-lg-1 col-2 text-secondary"><abbr :title1="output.unit[1].explain.firepwr.join('\r\n')" tabindex="-2" v-show="showEffFirepwr(1)">{{ output.unit[1].effective.firepwr }}</abbr></div>
         </div>
         <!-- Terrain -->
         <div class="row justify-content-center align-items-center text-center">
@@ -257,7 +257,7 @@
           <div class="col-6 text-center">{{ totHP2 }}</div>
         </div> -->
       </form>
-      <div class="small">Version 26 ({{ getLastModified }})</div>
+      <div class="small">Version 27 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
     </div>
   </div>
 

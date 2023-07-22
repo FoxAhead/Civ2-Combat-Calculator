@@ -97,11 +97,11 @@ export class Civ2 {
     let defenderUnitType = RulesTxt.getUnitType(defenderInput.type);
 
     attackerEffective.att = this.getEffectiveAttack(attackerInput, defenderInput, attackerExplain.att);
-    attackerEffective.def = undefined;
+    attackerEffective.def = attackerInput.def;
     attackerEffective.hit = attackerInput.hit;
     attackerEffective.firepwr = attackerInput.firepwr;
 
-    defenderEffective.att = undefined;
+    defenderEffective.att = defenderInput.att;
     defenderEffective.def = this.getEffectiveDefense(attackerInput, defenderInput, defenderExplain.def);
     defenderEffective.hit = defenderInput.hit;
     defenderEffective.firepwr = defenderInput.firepwr;
