@@ -162,6 +162,7 @@ export class Civ2 {
     // Submarine flag
     if (defenderUnitType.submarineAdvantagesDisadvantages()) {
       defenderEffective.firepwr = 1;
+      defenderExplain.firepwr.push(`Submarine disadvantage: = ${defenderEffective.firepwr}`);
     }
     // Caught in port
     if (defenderUnitType.domain == 2 && defenderInput.location == 'City' && attackerUnitType.domain != 2) {
