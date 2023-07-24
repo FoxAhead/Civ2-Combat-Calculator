@@ -35,8 +35,17 @@ select,
 select:focus,
 input[type="number"] {
   font-size: 16px !important;
-  padding: .25rem 1.5rem .25rem .25rem !important;
+  padding-top: .25rem !important;
+  padding-bottom: .25rem !important;
+  /* padding: .25rem 1.5rem .25rem .25rem !important; */
 }
+
+select,
+select:focus {
+  padding-left: .25rem !important;
+  padding-right: 1.5rem !important;
+}
+
 
 abbr[title1] {
   position: relative;
