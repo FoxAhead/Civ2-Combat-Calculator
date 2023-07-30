@@ -220,7 +220,7 @@ function initCharts() {
     options: {
       layout: {
         padding: {
-          bottom: -5,
+          bottom: -3,
         }
       },
       animation: { duration: 100 },
@@ -265,7 +265,7 @@ function initCharts() {
     options: {
       layout: {
         padding: {
-          bottom: -5,
+          bottom: -3,
         }
       },
       animation: { duration: 100 },
