@@ -218,6 +218,11 @@ function initCharts() {
     }
     ,
     options: {
+      layout: {
+        padding: {
+          bottom: -5,
+        }
+      },
       animation: { duration: 100 },
       plugins: { legend: false },
       scales: {
@@ -258,6 +263,11 @@ function initCharts() {
     }
     ,
     options: {
+      layout: {
+        padding: {
+          bottom: -5,
+        }
+      },
       animation: { duration: 100 },
       plugins: { legend: false },
       scales: {

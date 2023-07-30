@@ -24,7 +24,7 @@ label.btn {
 }
 
 .row {
-  margin: 0 0 .25rem 0 !important;
+  margin: 0 0 1px 0 !important;
 }
 
 .row>* {
@@ -45,7 +45,6 @@ select:focus {
   padding-left: .25rem !important;
   padding-right: 1.5rem !important;
 }
-
 
 abbr[title1] {
   position: relative;

@@ -234,12 +234,12 @@
             </div>
           </div>
         </div>
-        <div class="text-center mb-2 small">%</div>
+        <div class="text-center small">%</div>
         <!-- <div class="row justify-content-center mb-2">
           <div class="col-6 text-center">{{ output.unit[0].p }} %</div>
           <div class="col-6 text-center">{{ output.unit[1].p }} %</div>
         </div> -->
-        <div class="row justify-content-center g-0">
+        <div class="row justify-content-center m-0">
           <div class="col-md-5 col-6"><canvas id="myChart1"></canvas></div>
           <div class="col-md-5 col-6"><canvas id="myChart2"></canvas></div>
         </div>
@@ -247,7 +247,7 @@
           <div class="col-6 small">HP left</div>
           <div class="col-6 small">HP left</div>
         </div>
-        <div class="row justify-content-center g-0">
+        <div class="row justify-content-center">
           <div class="col-3 text-end"><button type="button" class="btn btn-success" @click="onClickStart">Simulate</button></div>
           <div class="col-lg-2 col-3 text-center p-0">{{ output.s }}</div>
           <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
@@ -257,7 +257,7 @@
           <div class="col-6 text-center">{{ totHP2 }}</div>
         </div> -->
       </form>
-      <div class="small">Version 30 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
+      <div class="small">Version 31 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
     </div>
   </div>
 
