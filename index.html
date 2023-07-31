@@ -22,7 +22,7 @@
         <div class="row justify-content-center align-items-center text-center">
           <!-- <div class="col-1 text-secondary">{{ input.unit[0].type }}</div> -->
           <div class="col-lg-3 col-5">
-            <select class="form-select text-center border-primary" aria-label="Select unit 1" v-model="input.unit[0].type" @change="moveUnitsValuesToForm(0)">
+            <select class="form-select text-center border-primary" id="selectUnit1Type" aria-label="Select unit 1" v-model="input.unit[0].type" @change="moveUnitsValuesToForm(0)">
               <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
@@ -32,7 +32,7 @@
           <!-- <div class="col-2 text-center"><button type="button" class="btn btn-outline-primary" :class="getAttackColor" @click="onClickArrow"><i class="bi bi-arrow-right"></i></button></div> -->
           <!-- <div class=" col-2 text-center"><button type="button" class="btn btn-outline-primary bi bi-arrow-right" :class="getAttackColor" @click="onClickArrow"></button></div> -->
           <div class="col-lg-3 col-5">
-            <select class="form-select text-center border-danger" aria-label="Select unit 2" v-model="input.unit[1].type" @change="moveUnitsValuesToForm(1)">
+            <select class="form-select text-center border-danger" id="selectUnit2Type" aria-label="Select unit 2" v-model="input.unit[1].type" @change="moveUnitsValuesToForm(1)">
               <option v-for="option in unitTypes" :key="option.value" :value="option.value">
                 {{ option.text }}
               </option>
@@ -253,7 +253,7 @@
           <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
         </div>
       </form>
-      <div class="small">Version 32 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
+      <div class="small">Version 33 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
     </div>
   </div>
 
