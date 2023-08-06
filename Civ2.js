@@ -8,6 +8,7 @@ const m2 = 4;
 export class Civ2 {
 
   static getEffectiveAttack(attacker, defender, explain) {
+    explain.push(`Effective Attack:`);
     let att = attacker.att * m;
     explain.push(`x${m} = ${att}`);
     if (attacker.veteran) {
@@ -30,6 +31,7 @@ export class Civ2 {
   }
 
   static getEffectiveDefense(attacker, defender, explain) {
+    explain.push(`Effective Defense:`);
     let def = defender.def * m2;
     explain.push(`x${m2} = ${def}`);
     let attackerUnitType = RulesTxt.getUnitType(attacker.type);
@@ -92,6 +94,49 @@ export class Civ2 {
     return def;
   }
 
+  static getDefenderRank(attacker, defender, explain) {
+    explain.push(`Defender Rank:`);
+    let dummy = [];
+    let attackerUnitType = RulesTxt.getUnitType(attacker.type);
+    let defenderUnitType = RulesTxt.getUnitType(defender.type);
+    let rank = this.getEffectiveDefense(attacker, defender, dummy);
+    explain.push(`= Effective Defense = ${rank}`);
+    let fullHP = 10 * defenderUnitType.hit;
+    rank = Math.floor(rank * defender.hit / fullHP);
+    explain.push(`Health: x${defender.hit}/${fullHP} = ${rank}`);
+    if (defenderUnitType.x2OnDefenseVersusHorsePikemen()) {
+      rank++;
+      explain.push(`Pikemen: +1 = ${rank}`);
+    }
+    if (defenderUnitType.x2OnDefenseVersusAirAEGIS()) {
+      if (attackerUnitType.domain == 1) {
+        if (attackerUnitType.destroyedAfterAttackingMissiles()) {
+          rank *= 5;
+          explain.push(`AEGIS vs Missile: x5 = ${rank}`);
+        } else {
+          rank *= 3;
+          explain.push(`AEGIS vs air: x3 = ${rank}`);
+        }
+      }
+    }
+    if (defenderUnitType.canAttackAirUnitsFighter()) {
+      if (attackerUnitType.domain == 1 && attackerUnitType.canAttackAirUnitsFighter()) {
+        rank *= 2;
+        explain.push(`Fighter vs Fighter: x2 = ${rank}`);
+      }
+    }
+    if (defenderUnitType.domain == 2 && defender.location == 'City') {
+      if (attackerUnitType.domain == 1 && !defender.city.sam) {
+        rank *= 2;
+        explain.push(`Sea vs Air in city without SAM: x2 = ${rank}`);
+      } else {
+        rank = Math.floor(rank / 2);
+        explain.push(`Sea vs Air in city with SAM: /2 = ${rank}`);
+      }
+    }
+    return rank;
+  }
+
   static setEffectives(attackerInput, defenderInput, attackerEffective, defenderEffective, attackerExplain, defenderExplain) {
     let attackerUnitType = RulesTxt.getUnitType(attackerInput.type);
     let defenderUnitType = RulesTxt.getUnitType(defenderInput.type);
@@ -100,43 +145,46 @@ export class Civ2 {
     attackerEffective.def = attackerInput.def;
     attackerEffective.hit = attackerInput.hit;
     attackerEffective.firepwr = attackerInput.firepwr;
+    attackerEffective.rank = 0;
     attackerEffective.nuclear = false;
 
     defenderEffective.att = defenderInput.att;
     defenderEffective.def = this.getEffectiveDefense(attackerInput, defenderInput, defenderExplain.def);
     defenderEffective.hit = defenderInput.hit;
     defenderEffective.firepwr = defenderInput.firepwr;
+    defenderEffective.rank = this.getDefenderRank(attackerInput, defenderInput, defenderExplain.rank);
     defenderEffective.nuclear = false;
 
+    let defenderExplainDef = [];
     // Helicopter vs Fighter
     if (attackerUnitType.role == 3 && defenderUnitType.domain == 1 && defenderUnitType.rng == 0) {
       defenderEffective.firepwr = 1;
       defenderExplain.firepwr.push(`Helicopter vs Fighter: = ${defenderEffective.firepwr}`);
       defenderEffective.def -= Math.floor(defenderEffective.def / 2);
-      defenderExplain.def.push(`Helicopter vs Fighter: -50% = ${defenderEffective.def}`);
+      defenderExplainDef.push(`Helicopter vs Fighter: -50% = ${defenderEffective.def}`);
     }
     // Pikemen vs mounted
     if (defenderUnitType.x2OnDefenseVersusHorsePikemen()) {
       if (attackerUnitType.move == 2 && attackerUnitType.domain == 0 && attackerInput.hit == 10) {
         defenderEffective.def += Math.floor(defenderEffective.def / 2);
-        defenderExplain.def.push(`Pikemen vs mounted: x1.5 = ${defenderEffective.def}`);
+        defenderExplainDef.push(`Pikemen vs mounted: x1.5 = ${defenderEffective.def}`);
       }
     }
     // AEGIS
     if (defenderUnitType.x2OnDefenseVersusAirAEGIS() && attackerUnitType.domain == 1) {
       if (attackerUnitType.destroyedAfterAttackingMissiles()) {
         defenderEffective.def *= 5;
-        defenderExplain.def.push(`AEGIS vs Missile: x5 = ${defenderEffective.def}`);
+        defenderExplainDef.push(`AEGIS vs Missile: x5 = ${defenderEffective.def}`);
       } else {
         defenderEffective.def *= 3;
-        defenderExplain.def.push(`AEGIS vs air: x3 = ${defenderEffective.def}`);
+        defenderExplainDef.push(`AEGIS vs air: x3 = ${defenderEffective.def}`);
       }
     }
     // Coastal Fortress
     if (defenderInput.location == 'City' && attackerUnitType.domain == 2 && defenderUnitType.domain != 2) {
       if (defenderInput.city.coastal) {
         defenderEffective.def *= 2;
-        defenderExplain.def.push(`Coastal Fortress: x2 = ${defenderEffective.def}`);
+        defenderExplainDef.push(`Coastal Fortress: x2 = ${defenderEffective.def}`);
       }
     }
     // City air defense
@@ -145,12 +193,12 @@ export class Civ2 {
         if (defenderInput.city.sdi) {
           if (attackerUnitType.destroyedAfterAttackingMissiles() && attackerInput.att < 99) {
             defenderEffective.def *= 2;
-            defenderExplain.def.push(`SDI Defense vs Missile: x2 = ${defenderEffective.def}`);
+            defenderExplainDef.push(`SDI Defense vs Missile: x2 = ${defenderEffective.def}`);
           }
         }
         if (defenderInput.city.sam) {
           defenderEffective.def *= 2;
-          defenderExplain.def.push(`SAM Missile Battery: x2 = ${defenderEffective.def}`);
+          defenderExplainDef.push(`SAM Missile Battery: x2 = ${defenderEffective.def}`);
         }
       }
     }
@@ -177,11 +225,15 @@ export class Civ2 {
     if (attackerInput.att >= 99) {
       if (defenderInput.location == 'City' && defenderInput.city.sdi) {
         defenderEffective.nuclear = true;
-        defenderExplain.def.push(`Defense in city thwarts nuclear attack`);
+        defenderExplainDef.push(`Defense in city thwarts nuclear attack`);
       } else {
         attackerEffective.nuclear = true;
         attackerExplain.att.push(`Nuclear attack`);
       }
+    }
+    if (defenderExplainDef.length > 0) {
+      defenderExplain.def.push(`Additional:`);
+      defenderExplain.def.push(...defenderExplainDef);
     }
   }
 }

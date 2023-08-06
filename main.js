@@ -40,19 +40,21 @@ function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = 
   this.strength = strength;
 }
 
-function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0, nuclear = false } = {}) {
+function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0, rank = 0, nuclear = false } = {}) {
   this.att = att;
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
+  this.rank = rank;
   this.nuclear = nuclear;
 }
 
-function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [] } = {}) {
+function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [], rank = [] } = {}) {
   this.att = att;
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
+  this.rank = rank;
 }
 
 function UnitOutput({ s, p0, p, pc } = {}) {

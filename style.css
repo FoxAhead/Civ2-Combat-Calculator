@@ -74,6 +74,7 @@ abbr[title1]:focus::after {
   font-size: 14px;
   padding: 3px 5px;
   z-index: 1000;
+  line-height: 1.5 !important;
 }
 
 abbr[tabindex="-1"]:hover::after,
