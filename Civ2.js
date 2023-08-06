@@ -100,11 +100,13 @@ export class Civ2 {
     attackerEffective.def = attackerInput.def;
     attackerEffective.hit = attackerInput.hit;
     attackerEffective.firepwr = attackerInput.firepwr;
+    attackerEffective.nuclear = false;
 
     defenderEffective.att = defenderInput.att;
     defenderEffective.def = this.getEffectiveDefense(attackerInput, defenderInput, defenderExplain.def);
     defenderEffective.hit = defenderInput.hit;
     defenderEffective.firepwr = defenderInput.firepwr;
+    defenderEffective.nuclear = false;
 
     // Helicopter vs Fighter
     if (attackerUnitType.role == 3 && defenderUnitType.domain == 1 && defenderUnitType.rng == 0) {
@@ -170,6 +172,16 @@ export class Civ2 {
       defenderExplain.firepwr.push(`Caught in port: = ${defenderEffective.firepwr}`);
       attackerEffective.firepwr *= 2;
       attackerExplain.firepwr.push(`Caught in port: x2 = ${attackerEffective.firepwr}`);
+    }
+    // Nuclear Missile
+    if (attackerInput.att >= 99) {
+      if (defenderInput.location == 'City' && defenderInput.city.sdi) {
+        defenderEffective.nuclear = true;
+        defenderExplain.def.push(`Defense in city thwarts nuclear attack`);
+      } else {
+        attackerEffective.nuclear = true;
+        attackerExplain.att.push(`Nuclear attack`);
+      }
     }
   }
 }

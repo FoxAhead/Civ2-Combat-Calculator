@@ -36,16 +36,22 @@ function simulateCombat(unitA, unitD) {
   //console.log("Test");
   let hpA = unitA.hit;
   let hpD = unitD.hit;
-  while ((hpA > 0) && (hpD > 0)) {
-    let dice1 = Math.floor(Math.random() * unitA.att);
-    let dice2 = Math.floor(Math.random() * unitD.def);
-    if (dice1 > dice2) {
-      hpD = hpD - unitA.firepwr;
-    } else {
-      hpA = hpA - unitD.firepwr;
+  if (unitA.nuclear) {
+    hpD = 0;
+  } else if (unitD.nuclear) {
+    hpA = 0;
+  } else {
+    while ((hpA > 0) && (hpD > 0)) {
+      let dice1 = (unitA.att <= 1) ? 0 : Math.floor(Math.random() * unitA.att);
+      let dice2 = (unitD.def <= 1) ? 0 : Math.floor(Math.random() * unitD.def);
+      if (dice1 > dice2) {
+        hpD = hpD - unitA.firepwr;
+      } else {
+        hpA = hpA - unitD.firepwr;
+      }
+      if (hpA < 0) hpA = 0;
+      if (hpD < 0) hpD = 0;
     }
-    if (hpA < 0) hpA = 0;
-    if (hpD < 0) hpD = 0;
   }
   return {
     hpA: hpA,

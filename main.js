@@ -40,11 +40,12 @@ function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = 
   this.strength = strength;
 }
 
-function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0 } = {}) {
+function UnitEffective({ att = 0, def = 0, hit = 0, firepwr = 0, nuclear = false } = {}) {
   this.att = att;
   this.def = def;
   this.hit = hit;
   this.firepwr = firepwr;
+  this.nuclear = nuclear;
 }
 
 function EffectiveExplain({ att = [], def = [], hit = [], firepwr = [] } = {}) {
@@ -150,7 +151,7 @@ function initVue() {
         }
       },
       showParadrop(unitIndex) {
-        return (RulesTxt.getUnitType(this.input.unit[unitIndex].type)).canMakeParadrops();
+        return ((RulesTxt.getUnitType(this.input.unit[unitIndex].type)).canMakeParadrops() && this.isAttackingUnit(unitIndex));
       },
       isAttackingUnit(unitIndex) {
         return this.input.attackingUnit == unitIndex;
@@ -350,11 +351,27 @@ function pa(a, d) {
 }
 
 function calculate(attacker, defender) {
-  if (attacker.input.unit.att > 0) {
-    let effA = attacker.output.unit.effective;
-    let effD = defender.output.unit.effective;
+  let effA = attacker.output.unit.effective;
+  let effD = defender.output.unit.effective;
+  if (attacker.input.unit.att >= 99) {
+    // Nuclear Msl.
+    if (effD.nuclear) {
+      // Defense in city thwarts nuclear attack
+      attacker.output.unit.pc = 0;
+      defender.output.unit.pc = 100;
+      attacker.output.unit.p0 = 0;
+      defender.output.unit.p0 = 100;
+      defender.output.hps[effD.hit - 1] = 100;
+    } else {
+      // Nuked
+      attacker.output.unit.pc = 100;
+      defender.output.unit.pc = 0;
+      attacker.output.unit.p0 = 100;
+      defender.output.unit.p0 = 0;
+      attacker.output.hps[effA.hit - 1] = 100;
+    }
+  } else if (attacker.input.unit.att > 0) {
     let p = pa(effA.att, effD.def);
-    let max = 0;
     let toWinA = Math.ceil(effD.hit / effA.firepwr);
     let toWinD = Math.ceil(effA.hit / effD.firepwr);
     attacker.output.unit.pc = 0;
@@ -363,23 +380,28 @@ function calculate(attacker, defender) {
       let pi = nbd(p, k, toWinA);
       attacker.output.unit.pc += pi;
       attacker.output.hps[hp - 1] = (pi * 100).toFixed(2);
-      max = Math.max(max, attacker.output.hps[hp - 1]);
     }
     for (let k = 0, hp = effD.hit; hp > 0; k++, hp -= effA.firepwr) {
       let pi = nbd(1 - p, k, toWinD);
       defender.output.unit.pc += pi;
       defender.output.hps[hp - 1] = (pi * 100).toFixed(2);
-      max = Math.max(max, defender.output.hps[hp - 1]);
     }
     attacker.output.unit.pc = (attacker.output.unit.pc * 100).toFixed(2);
     defender.output.unit.pc = (defender.output.unit.pc * 100).toFixed(2);
     attacker.output.unit.p0 = (p * 100).toFixed(2);
     defender.output.unit.p0 = (100 - attacker.output.unit.p0).toFixed(2);
-    max = max * 1.05;
-    max = parseFloat(max.toPrecision(2));
-    myChart1.options.scales.yAxes[0].ticks.max = max;
-    myChart2.options.scales.yAxes[0].ticks.max = max;
   }
+  let max = 0;
+  for (let i = 0; i < attacker.output.hps.length; i++) {
+    max = Math.max(max, attacker.output.hps[i]);
+  }
+  for (let i = 0; i < defender.output.hps.length; i++) {
+    max = Math.max(max, defender.output.hps[i]);
+  }
+  max = max * 1.05;
+  max = parseFloat(max.toPrecision(2));
+  myChart1.options.scales.yAxes[0].ticks.max = max;
+  myChart2.options.scales.yAxes[0].ticks.max = max;
   myChart1.update();
   myChart2.update();
 }
