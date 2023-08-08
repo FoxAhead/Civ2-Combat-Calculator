@@ -147,11 +147,11 @@
               <label class="btn btn-outline-primary" for="inputUnit1Strength1">1/3</label>
             </div>
             <div class="btn-group" role="group" v-show="!isAttackingUnit(0)">
-              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Open" v-model="input.unit[0].location" value="Open" checked>
+              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Open" v-model="input.unit[0].location" value="0" checked>
               <label class="btn btn-outline-primary" for="inputUnit1Open">Open</label>
-              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Fortress" v-model="input.unit[0].location" value="Fortress">
+              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Fortress" v-model="input.unit[0].location" value="1">
               <label class="btn btn-outline-primary" for="inputUnit1Fortress">Fortress</label>
-              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1City" v-model="input.unit[0].location" value="City">
+              <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1City" v-model="input.unit[0].location" value="2">
               <label class="btn btn-outline-primary" for="inputUnit1City">City</label>
             </div>
           </div>
@@ -165,11 +165,11 @@
               <label class="btn btn-outline-danger" for="inputUnit2Strength1">1/3</label>
             </div>
             <div class="btn-group" role="group" v-show="!isAttackingUnit(1)">
-              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Open" v-model="input.unit[1].location" value="Open" checked>
+              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Open" v-model="input.unit[1].location" value="0" checked>
               <label class="btn btn-outline-danger p-1" for="inputUnit2Open">Open</label>
-              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Fortress" v-model="input.unit[1].location" value="Fortress">
+              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Fortress" v-model="input.unit[1].location" value="1">
               <label class="btn btn-outline-danger p-1" for="inputUnit2Fortress">Fortress</label>
-              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2City" v-model="input.unit[1].location" value="City">
+              <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2City" v-model="input.unit[1].location" value="2">
               <label class="btn btn-outline-danger" for="inputUnit2City">City</label>
             </div>
           </div>
@@ -251,7 +251,10 @@
           <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
         </div>
       </form>
-      <div class="small">Version 35 ({{ getLastModified }}) - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a></div>
+      <div class="small">Version 36 ({{ getLastModified }})
+        - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a>
+        - <a :href="output.share">Share</a>
+      </div>
     </div>
   </div>
 

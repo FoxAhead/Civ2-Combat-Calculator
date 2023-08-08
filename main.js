@@ -1,5 +1,5 @@
 import { RulesTxt } from "./RulesTxt.js";
-import { Civ2 } from "./Civ2.js";
+import { Civ2, Location } from "./Civ2.js";
 
 window.onload = main;
 
@@ -24,7 +24,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = 'Open', strength = 3 } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = Location.OPEN, strength = 3 } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -70,6 +70,7 @@ async function main() {
   await RulesTxt.loadFromFile('RULES.TXT');
   initVue();
   initCharts();
+  parseURLParams();
   vm.callStartCalc();
 }
 
@@ -93,6 +94,7 @@ function initVue() {
             new UnitOutput()
           ],
           s: 0,
+          share: '',
         }
       }
     },
@@ -159,7 +161,7 @@ function initVue() {
         return this.input.attackingUnit == unitIndex;
       },
       showCity(unitIndex) {
-        return !this.isAttackingUnit(unitIndex) && (this.input.unit[unitIndex].location == 'City');
+        return !this.isAttackingUnit(unitIndex) && (this.input.unit[unitIndex].location == Location.CITY);
       },
       showEffFirepwr(unitIndex) {
         return this.output.unit[unitIndex].explain.firepwr.length > 0;
@@ -189,6 +191,8 @@ function initVue() {
           this.checkInput(0);
           this.checkInput(1);
           this.callStartCalc();
+          this.output.share = packInput(this.input);
+          window.history.replaceState({}, '', this.output.share);
         },
         deep: true
       },
@@ -527,3 +531,112 @@ function undefineObjectProperties(obj) {
     }
   }
 }
+
+function parseURLParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const u1 = urlParams.get('u1');
+  const u2 = urlParams.get('u2');
+  if (u1 != null && u2 != null) {
+    unpackUnitInput(u1, vm.input.unit[0]);
+    unpackUnitInput(u2, vm.input.unit[1]);
+    const au = urlParams.get('au');
+    if (au != null) {
+      vm.input.attackingUnit = +au;
+    }
+  }
+}
+
+function packInput(input) {
+  let u1 = packUnitInput(input.unit[0]);
+  let u2 = packUnitInput(input.unit[1]);
+  let au = input.attackingUnit ? `&au=${input.attackingUnit}` : '';
+  return '?u1=' + u1 + '&u2=' + u2 + au;
+}
+
+function packUnitInput(unitInput) {
+  let byte = 0;
+  let bytes = new Uint8Array(9);
+  let view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  view.setUint8(0, unitInput.type);    // 0..255
+  view.setUint8(1, unitInput.att);     // 0..255
+  view.setUint8(2, unitInput.def);     // 0..255
+  view.setUint8(3, unitInput.hit);     // 0..255
+  view.setUint8(4, unitInput.firepwr); // 0..255
+
+  byte = unitInput.terrain & 0x3F; // 6 bits, up to 64 terrains
+  byte |= unitInput.river << 6;
+  view.setUint8(5, byte);
+
+  byte = unitInput.veteran;
+  byte |= unitInput.fortified << 1;
+  byte |= unitInput.paradrop << 2;
+  byte |= (unitInput.location & 3) << 3; // 2 bits
+  view.setUint8(6, byte);
+
+  byte = unitInput.city.walls;
+  byte |= unitInput.city.coastal << 1;
+  byte |= unitInput.city.sdi << 2;
+  byte |= unitInput.city.sam << 3;
+  // byte |= unitInput.city.palace << 4;
+  view.setUint8(7, byte);
+
+  view.setUint8(8, unitInput.strength);
+
+  // console.log(bytes);
+  let s = base64UrlEncode(bytes);
+  // console.log(s);
+  // console.log(unitInput);
+  return s;
+}
+
+function unpackUnitInput(s, unitInput) {
+  let byte = 0;
+  let bytes = base64UrlDecode(s);
+  let view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  // console.log(bytes);
+  unitInput.type = view.getUint8(0);
+  unitInput.att = view.getUint8(1);
+  unitInput.def = view.getUint8(2);
+  unitInput.hit = view.getUint8(3);
+  unitInput.firepwr = view.getUint8(4);
+
+  byte = view.getUint8(5);
+  unitInput.terrain = byte & 0x3F;
+  unitInput.river = Boolean(byte >> 6 & 1);
+
+  byte = view.getUint8(6);
+  unitInput.veteran = Boolean(byte & 1);
+  unitInput.fortified = Boolean(byte >> 1 & 1);
+  unitInput.paradrop = Boolean(byte >> 2 & 1);
+  unitInput.location = byte >> 3 & 3;
+
+  byte = view.getUint8(7);
+  unitInput.city.walls = Boolean(byte & 1);
+  unitInput.city.coastal = Boolean(byte >> 1 & 1);
+  unitInput.city.sdi = Boolean(byte >> 2 & 1);
+  unitInput.city.sam = Boolean(byte >> 3 & 1);
+
+  unitInput.strength = view.getUint8(8);
+}
+
+
+function base64UrlEncode(bytes) {
+  let a = btoa(String.fromCharCode(...bytes));
+  a = a.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/m, '');
+  return a;
+}
+
+function base64UrlDecode(s) {
+  let a = s.replace(/-/g, '+').replace(/_/g, '/');
+  let pad = a.length % 4;
+  if (pad) {
+    if (pad === 1) {
+      throw new Error('InvalidLengthError: Input base64url string is the wrong length to determine padding');
+    }
+    a += new Array(5 - pad).join('=');
+  }
+  return new Uint8Array(atob(a).split("").map(function (c) {
+    return c.charCodeAt(0);
+  }));
+}
+

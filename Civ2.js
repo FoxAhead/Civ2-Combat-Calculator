@@ -1,6 +1,11 @@
 import { RulesTxt } from "./RulesTxt.js";
 
 const TYPE_PARTISANS = 9;
+export const Location = Object.freeze({
+  OPEN: 0,
+  FORTRESS: 1,
+  CITY: 2
+})
 
 const m = 8;
 const m2 = 4;
@@ -50,14 +55,14 @@ export class Civ2 {
       dword_6ACB34 = 3;
       explainText = `Fortified`;
     }
-    if (defender.location == 'Fortress') {
+    if (defender.location == Location.FORTRESS) {
       if (attackerUnitType.domain != 1 && !attackerUnitType.negatesCityWallsHowitzer()) {
         dword_6ACB34 = 4;
         explainText = `Fortress`;
       }
     }
     while (true) {
-      if (defender.location == 'City') {
+      if (defender.location == Location.CITY) {
         if (defenderUnitType.domain == 1 && defenderUnitType.canAttackAirUnitsFighter()) {
           if (attackerUnitType.domain == 1 && !attackerUnitType.destroyedAfterAttackingMissiles()) {
             if (attackerUnitType.canAttackAirUnitsFighter()) {
@@ -125,7 +130,7 @@ export class Civ2 {
         explain.push(`Fighter vs Fighter: x2 = ${rank}`);
       }
     }
-    if (defenderUnitType.domain == 2 && defender.location == 'City') {
+    if (defenderUnitType.domain == 2 && defender.location == Location.CITY) {
       if (attackerUnitType.domain == 1 && !defender.city.sam) {
         rank *= 2;
         explain.push(`Sea vs Air in city without SAM: x2 = ${rank}`);
@@ -181,14 +186,14 @@ export class Civ2 {
       }
     }
     // Coastal Fortress
-    if (defenderInput.location == 'City' && attackerUnitType.domain == 2 && defenderUnitType.domain != 2) {
+    if (defenderInput.location == Location.CITY && attackerUnitType.domain == 2 && defenderUnitType.domain != 2) {
       if (defenderInput.city.coastal) {
         defenderEffective.def *= 2;
         defenderExplainDef.push(`Coastal Fortress: x2 = ${defenderEffective.def}`);
       }
     }
     // City air defense
-    if (defenderInput.location == 'City' && attackerUnitType.domain == 1) {
+    if (defenderInput.location == Location.CITY && attackerUnitType.domain == 1) {
       if (!defenderUnitType.canAttackAirUnitsFighter() || attackerUnitType.destroyedAfterAttackingMissiles()) {
         if (defenderInput.city.sdi) {
           if (attackerUnitType.destroyedAfterAttackingMissiles() && attackerInput.att < 99) {
@@ -215,7 +220,7 @@ export class Civ2 {
       defenderExplain.firepwr.push(`Submarine disadvantage: = ${defenderEffective.firepwr}`);
     }
     // Caught in port
-    if (defenderUnitType.domain == 2 && defenderInput.location == 'City' && attackerUnitType.domain != 2) {
+    if (defenderUnitType.domain == 2 && defenderInput.location == Location.CITY && attackerUnitType.domain != 2) {
       defenderEffective.firepwr = 1;
       defenderExplain.firepwr.push(`Caught in port: = ${defenderEffective.firepwr}`);
       attackerEffective.firepwr *= 2;
@@ -223,7 +228,7 @@ export class Civ2 {
     }
     // Nuclear Missile
     if (attackerInput.att >= 99) {
-      if (defenderInput.location == 'City' && defenderInput.city.sdi) {
+      if (defenderInput.location == Location.CITY && defenderInput.city.sdi) {
         defenderEffective.nuclear = true;
         defenderExplainDef.push(`Defense in city thwarts nuclear attack`);
       } else {
