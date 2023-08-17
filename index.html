@@ -157,14 +157,8 @@
             <div class="btn-group" role="group" v-show="isAttackingUnit(1)">
               <template v-for="strength in strengthRadios" :key="strength.value">
                 <input type="radio" class="btn-check" name="groupStrength2" :id="'inputUnit2Strength'+strength.value" v-model="input.unit[1].strength" :value="strength.value">
-                <label class="btn btn-outline-primary" :for="'inputUnit2Strength'+strength.value">{{ strength.text }}</label>
+                <label class="btn btn-outline-danger" :for="'inputUnit2Strength'+strength.value">{{ strength.text }}</label>
               </template>
-              <!-- <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength3" v-model="input.unit[1].strength" value="3" checked>
-              <label class="btn btn-outline-danger" for="inputUnit2Strength3">Full strength</label>
-              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength2" v-model="input.unit[1].strength" value="2">
-              <label class="btn btn-outline-danger" for="inputUnit2Strength2">2/3</label>
-              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength1" v-model="input.unit[1].strength" value="1">
-              <label class="btn btn-outline-danger" for="inputUnit2Strength1">1/3</label> -->
             </div>
             <div class="btn-group" role="group" v-show="!isAttackingUnit(1)">
               <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Open" v-model="input.unit[1].location" value="0" checked>
@@ -253,7 +247,7 @@
           <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
         </div>
       </form>
-      <div class="small">Version 38 ({{ getLastModified }})
+      <div class="small">Version 39 ({{ getLastModified }})
         - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a><br>
         <a href=".">Reset</a>
         - <a :href="output.share" title="Copy this link to share current setup">Share</a>
