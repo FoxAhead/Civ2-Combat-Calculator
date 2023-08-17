@@ -139,12 +139,10 @@
         <div class="row justify-content-center text-center">
           <div class="col-lg-4 col-6">
             <div class="btn-group" role="group" v-show="isAttackingUnit(0)">
-              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength3" v-model="input.unit[0].strength" value="3" checked>
-              <label class="btn btn-outline-primary" for="inputUnit1Strength3">Full strength</label>
-              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength2" v-model="input.unit[0].strength" value="2">
-              <label class="btn btn-outline-primary" for="inputUnit1Strength2">2/3</label>
-              <input type="radio" class="btn-check" name="groupStrength1" id="inputUnit1Strength1" v-model="input.unit[0].strength" value="1">
-              <label class="btn btn-outline-primary" for="inputUnit1Strength1">1/3</label>
+              <template v-for="strength in strengthRadios" :key="strength.value">
+                <input type="radio" class="btn-check" name="groupStrength1" :id="'inputUnit1Strength'+strength.value" v-model="input.unit[0].strength" :value="strength.value" :checked="strength.checked">
+                <label class="btn btn-outline-primary" :for="'inputUnit1Strength'+strength.value">{{ strength.text }}</label>
+              </template>
             </div>
             <div class="btn-group" role="group" v-show="!isAttackingUnit(0)">
               <input type="radio" class="btn-check" name="groupLocation1" id="inputUnit1Open" v-model="input.unit[0].location" value="0" checked>
@@ -157,12 +155,16 @@
           </div>
           <div class="col-lg-4 col-6">
             <div class="btn-group" role="group" v-show="isAttackingUnit(1)">
-              <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength3" v-model="input.unit[1].strength" value="3" checked>
+              <template v-for="strength in strengthRadios" :key="strength.value">
+                <input type="radio" class="btn-check" name="groupStrength2" :id="'inputUnit2Strength'+strength.value" v-model="input.unit[1].strength" :value="strength.value">
+                <label class="btn btn-outline-primary" :for="'inputUnit2Strength'+strength.value">{{ strength.text }}</label>
+              </template>
+              <!-- <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength3" v-model="input.unit[1].strength" value="3" checked>
               <label class="btn btn-outline-danger" for="inputUnit2Strength3">Full strength</label>
               <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength2" v-model="input.unit[1].strength" value="2">
               <label class="btn btn-outline-danger" for="inputUnit2Strength2">2/3</label>
               <input type="radio" class="btn-check" name="groupStrength2" id="inputUnit2Strength1" v-model="input.unit[1].strength" value="1">
-              <label class="btn btn-outline-danger" for="inputUnit2Strength1">1/3</label>
+              <label class="btn btn-outline-danger" for="inputUnit2Strength1">1/3</label> -->
             </div>
             <div class="btn-group" role="group" v-show="!isAttackingUnit(1)">
               <input type="radio" class="btn-check" name="groupLocation2" id="inputUnit2Open" v-model="input.unit[1].location" value="0" checked>
@@ -251,9 +253,11 @@
           <div class="col-3 text-start"><button type="button" class="btn btn-danger" @click="onClickStop" v-show="showStop">Stop</button></div>
         </div>
       </form>
-      <div class="small">Version 36 ({{ getLastModified }})
-        - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a>
-        - <a :href="output.share">Share</a>
+      <div class="small">Version 37 ({{ getLastModified }})
+        - <a href="https://github.com/FoxAhead/Civ2-Combat-Calculator">GitHub</a><br>
+        <a href="\">Reset</a>
+        - <a :href="output.share" title="Copy this link to share current setup">Share</a>
+        - <a href="javascript:void(0)" title="Load your own RULES.TXT" @click="onClickRulesTxt">RULES.TXT</a>
       </div>
     </div>
   </div>

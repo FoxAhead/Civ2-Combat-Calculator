@@ -1,5 +1,6 @@
 import { RulesTxt } from "./RulesTxt.js";
 import { Civ2, Location } from "./Civ2.js";
+import { UnitType } from "./UnitType.js";
 
 window.onload = main;
 
@@ -24,7 +25,7 @@ const CHART_COLOR = [
   ]
 ];
 
-function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = Location.OPEN, strength = 3 } = {}) {
+function UnitInput({ type = 2, att = 1, def = 1, hit = 10, firepwr = 1, river = false, terrain = 2, veteran = false, fortified = false, paradrop = false, location = Location.OPEN, strength = RulesTxt.getCosmic().roadMovementMultiplier } = {}) {
   this.type = type;
   this.att = att;
   this.def = def;
@@ -74,11 +75,18 @@ async function main() {
   vm.callStartCalc();
 }
 
+async function onChangeRulesTxt(ev) {
+  let file = ev.target.files[0];
+  await RulesTxt.loadFromFile2(file);
+  vm.setSelectOptions();
+}
+
 function initVue() {
   app = Vue.createApp({
     data() {
       return {
         workersCount: 0,
+        strengthRadios: RulesTxt.getStrengthRadios(),
         unitTypes: RulesTxt.getUnitTypesOptions(),
         terrainTypes: RulesTxt.getTerrainTypesOptions(),
         input: {
@@ -108,7 +116,27 @@ function initVue() {
       onClickArrow() {
         this.input.attackingUnit = 1 - this.input.attackingUnit;
       },
+      onClickRulesTxt() {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.txt';
+        input.onchange = onChangeRulesTxt;
+        input.click();
+      },
+      setSelectOptions() {
+        this.strengthRadios = RulesTxt.getStrengthRadios();
+        this.input.unit[0].strength = RulesTxt.getCosmic().roadMovementMultiplier;
+        this.input.unit[1].strength = RulesTxt.getCosmic().roadMovementMultiplier;
+        this.unitTypes = RulesTxt.getUnitTypesOptions();
+        this.terrainTypes = RulesTxt.getTerrainTypesOptions();
+        this.moveUnitsValuesToForm(0);
+        this.moveUnitsValuesToForm(1);
+      },
       moveUnitsValuesToForm(unitIndex) {
+        this.input.unit[unitIndex].att = 0;
+        this.input.unit[unitIndex].def = 0;
+        this.input.unit[unitIndex].hit = 0;
+        this.input.unit[unitIndex].firepwr = 0;
         // console.log('moveUnitsValuesToForm');
         const unit = RulesTxt.getUnitType(this.input.unit[unitIndex].type);
         if (unit != undefined) {
@@ -119,10 +147,13 @@ function initVue() {
         }
       },
       checkInput(unitIndex) {
-        if (!RulesTxt.getUnitType(this.input.unit[unitIndex].type).canMakeParadrops && this.input.unit[unitIndex].paradrop) { //Can make paradrops
-          this.$nextTick(() => {
-            this.input.unit[unitIndex].paradrop = false;
-          });
+        const unitType = RulesTxt.getUnitType(this.input.unit[unitIndex].type);
+        if (unitType != undefined) {
+          if (!unitType.canMakeParadrops && this.input.unit[unitIndex].paradrop) { //Can make paradrops
+            this.$nextTick(() => {
+              this.input.unit[unitIndex].paradrop = false;
+            });
+          }
         }
       },
       callStartCalc() {
@@ -155,7 +186,12 @@ function initVue() {
         }
       },
       showParadrop(unitIndex) {
-        return ((RulesTxt.getUnitType(this.input.unit[unitIndex].type)).canMakeParadrops() && this.isAttackingUnit(unitIndex));
+        const unitType = RulesTxt.getUnitType(this.input.unit[unitIndex].type);
+        if (unitType != undefined) {
+          return (unitType.canMakeParadrops() && this.isAttackingUnit(unitIndex));
+        } else {
+          return false;
+        }
       },
       isAttackingUnit(unitIndex) {
         return this.input.attackingUnit == unitIndex;
